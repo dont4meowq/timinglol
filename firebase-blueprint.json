@@ -1,0 +1,68 @@
+{
+  "collections": [
+    {
+      "name": "users",
+      "fields": [
+        { "name": "username", "type": "string", "required": true },
+        { "name": "isAdmin", "type": "boolean", "required": true }
+      ],
+      "rules": {
+        "read": "auth != null",
+        "write": "auth != null && get(/databases/$(database)/documents/users/$(auth.uid)).data.isAdmin == true"
+      }
+    },
+    {
+      "name": "sections",
+      "fields": [
+        { "name": "title", "type": "string", "required": true },
+        { "name": "collapsed", "type": "boolean", "required": true }
+      ],
+      "rules": {
+        "read": "auth != null",
+        "write": "auth != null"
+      }
+    },
+    {
+      "name": "notes",
+      "fields": [
+        { "name": "sectionId", "type": "string", "required": true },
+        { "name": "title", "type": "string", "required": true },
+        { "name": "content", "type": "string", "required": false },
+        { "name": "pinned", "type": "boolean", "required": true }
+      ],
+      "rules": {
+        "read": "auth != null",
+        "write": "auth != null"
+      }
+    },
+    {
+      "name": "fans",
+      "fields": [
+        { "name": "model", "type": "string", "required": true },
+        { "name": "nickname", "type": "string", "required": true },
+        { "name": "fetishes", "type": "string", "required": false },
+        { "name": "spending", "type": "string", "required": true },
+        { "name": "timezone", "type": "string", "required": false },
+        { "name": "notes", "type": "string", "required": false },
+        { "name": "tagColor", "type": "string", "required": true }
+      ],
+      "rules": {
+        "read": "auth != null",
+        "write": "auth != null"
+      }
+    },
+    {
+      "name": "dayOffs",
+      "fields": [
+        { "name": "date", "type": "string", "required": true },
+        { "name": "shift", "type": "string", "required": true },
+        { "name": "model", "type": "string", "required": true },
+        { "name": "operator", "type": "string", "required": true }
+      ],
+      "rules": {
+        "read": "auth != null",
+        "write": "auth != null"
+      }
+    }
+  ]
+}

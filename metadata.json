@@ -1,0 +1,6 @@
+{
+  "name": "Nexus Notes",
+  "description": "Modern dark-themed dashboard for text notes with sections, tabs, and drag-and-drop.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
