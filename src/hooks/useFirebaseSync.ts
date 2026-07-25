@@ -84,8 +84,9 @@ export function useFirebaseSync() {
 
     unsubs.push(
       onSnapshot(sectionsQuery, (snap) => {
-        // Sort sections alphabetically or leave as is
+        // Sort sections by order
         const sections = snap.docs.map(d => ({ id: d.id, ...d.data() } as any));
+        sections.sort((a, b) => (a.order || 0) - (b.order || 0));
         setSections(sections);
       })
     );

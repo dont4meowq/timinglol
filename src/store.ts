@@ -107,26 +107,26 @@ export const useStore = create<AppState>()((set, get) => ({
   addBonus: (bonus) => {
     const id = generateId();
     const obj = { ...bonus, id };
-    setDoc(doc(db, `bonuses/${id}`), obj);
+    setDoc(doc(db, `bonuses/${id}`), obj).catch(console.error);
     set((state) => ({ bonuses: [...state.bonuses, obj] }));
   },
   deleteBonus: (id) => {
-    deleteDoc(doc(db, `bonuses/${id}`));
+    deleteDoc(doc(db, `bonuses/${id}`)).catch(console.error);
     set((state) => ({ bonuses: state.bonuses.filter(b => b.id !== id) }));
   },
   
   addGuide: (guide) => {
     const id = generateId();
     const obj = { ...guide, id, likes: [], createdAt: Date.now() };
-    setDoc(doc(db, `guides/${id}`), obj);
+    setDoc(doc(db, `guides/${id}`), obj).catch(console.error);
     set((state) => ({ guides: [...state.guides, obj] }));
   },
   updateGuide: (id, updates) => {
-    updateDoc(doc(db, `guides/${id}`), updates);
+    updateDoc(doc(db, `guides/${id}`), updates).catch(console.error);
     set((state) => ({ guides: state.guides.map(g => g.id === id ? { ...g, ...updates } : g) }));
   },
   deleteGuide: (id) => {
-    deleteDoc(doc(db, `guides/${id}`));
+    deleteDoc(doc(db, `guides/${id}`)).catch(console.error);
     set((state) => ({ guides: state.guides.filter(g => g.id !== id) }));
   },
   toggleGuideLike: (id, userId) => {
@@ -134,7 +134,7 @@ export const useStore = create<AppState>()((set, get) => ({
     if (!guide) return;
     const isLiked = guide.likes.includes(userId);
     const newLikes = isLiked ? guide.likes.filter(u => u !== userId) : [...guide.likes, userId];
-    updateDoc(doc(db, `guides/${id}`), { likes: newLikes });
+    updateDoc(doc(db, `guides/${id}`), { likes: newLikes }).catch(console.error);
     set((state) => ({ guides: state.guides.map(g => g.id === id ? { ...g, likes: newLikes } : g) }));
   },
   
@@ -155,53 +155,55 @@ export const useStore = create<AppState>()((set, get) => ({
   addFan: (fan) => {
     const id = generateId();
     const obj = { ...fan, id };
-    setDoc(doc(db, `fans/${id}`), obj);
+    setDoc(doc(db, `fans/${id}`), obj).catch(console.error);
     // Optimistic update
     set((state) => ({ fans: [...state.fans, obj] }));
   },
 
   updateFan: (id, updates) => {
-    updateDoc(doc(db, `fans/${id}`), updates);
+    updateDoc(doc(db, `fans/${id}`), updates).catch(console.error);
     set((state) => ({ fans: state.fans.map(f => f.id === id ? { ...f, ...updates } : f) }));
   },
 
   deleteFan: (id) => {
-    deleteDoc(doc(db, `fans/${id}`));
+    deleteDoc(doc(db, `fans/${id}`)).catch(console.error);
     set((state) => ({ fans: state.fans.filter(f => f.id !== id) }));
   },
 
   addCustom: (custom) => {
     const id = generateId();
     const obj = { ...custom, id, createdAt: Date.now() };
-    setDoc(doc(db, `customs/${id}`), obj);
+    setDoc(doc(db, `customs/${id}`), obj).catch(console.error);
     set((state) => ({ customs: [...state.customs, obj] }));
   },
   updateCustom: (id, updates) => {
-    updateDoc(doc(db, `customs/${id}`), updates);
+    updateDoc(doc(db, `customs/${id}`), updates).catch(console.error);
     set((state) => ({ customs: state.customs.map(c => c.id === id ? { ...c, ...updates } : c) }));
   },
   deleteCustom: (id) => {
-    deleteDoc(doc(db, `customs/${id}`));
+    deleteDoc(doc(db, `customs/${id}`)).catch(console.error);
     set((state) => ({ customs: state.customs.filter(c => c.id !== id) }));
   },
   
   addDayOff: (dayOff) => {
     const id = generateId();
     const obj = { ...dayOff, id };
-    setDoc(doc(db, `dayOffs/${id}`), obj);
+    setDoc(doc(db, `dayOffs/${id}`), obj).catch(console.error);
     set((state) => ({ dayOffs: [...state.dayOffs, obj] }));
   },
   
   deleteDayOff: (id) => {
-    deleteDoc(doc(db, `dayOffs/${id}`));
+    deleteDoc(doc(db, `dayOffs/${id}`)).catch(console.error);
     set((state) => ({ dayOffs: state.dayOffs.filter(d => d.id !== id) }));
   },
 
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
 
   addSection: (id, title, model) => {
-    const newSection: Section = { id, title, notes: [], collapsed: false, model };
-    setDoc(doc(db, `sections/${id}`), newSection);
+    const state = get();
+    const order = state.sections.length;
+    const newSection: Section = { id, title, notes: [], collapsed: false, model, order };
+    setDoc(doc(db, `sections/${id}`), newSection).catch(console.error);
     set((state) => ({ sections: [...state.sections, newSection], activeSectionId: id }));
   },
   
@@ -209,13 +211,13 @@ export const useStore = create<AppState>()((set, get) => ({
     const section = get().sections.find(s => s.id === id);
     if (section) {
       const updated = { ...section, title };
-      setDoc(doc(db, `sections/${id}`), updated);
+      setDoc(doc(db, `sections/${id}`), updated).catch(console.error);
       set((state) => ({ sections: state.sections.map(s => s.id === id ? updated : s) }));
     }
   },
 
   deleteSection: (id) => {
-    deleteDoc(doc(db, `sections/${id}`));
+    deleteDoc(doc(db, `sections/${id}`)).catch(console.error);
     set((state) => {
       const newSections = state.sections.filter(s => s.id !== id);
       const newActiveSectionId = state.activeSectionId === id ? (newSections[0]?.id || null) : state.activeSectionId;
@@ -225,8 +227,11 @@ export const useStore = create<AppState>()((set, get) => ({
   },
 
   reorderSections: (oldIndex, newIndex) => {
-    const newSections = arrayMove(get().sections, oldIndex, newIndex);
-    // Ideally update order in DB, but for simplicity skipping DB order save for now
+    const newSections = arrayMove(get().sections, oldIndex, newIndex).map((s, index) => ({ ...s, order: index }));
+    // Update order in DB
+    newSections.forEach(s => {
+      updateDoc(doc(db, `sections/${s.id}`), { order: s.order }).catch(console.error);
+    });
     set({ sections: newSections });
   },
 
@@ -234,7 +239,7 @@ export const useStore = create<AppState>()((set, get) => ({
     const section = get().sections.find(s => s.id === id);
     if (section) {
       const updated = { ...section, collapsed: !section.collapsed };
-      setDoc(doc(db, `sections/${id}`), updated);
+      setDoc(doc(db, `sections/${id}`), updated).catch(console.error);
       set((state) => ({ sections: state.sections.map(s => s.id === id ? updated : s) }));
     }
   },
@@ -252,7 +257,7 @@ export const useStore = create<AppState>()((set, get) => ({
     if (section) {
       const newNote = { id: generateId(), title, content: '', pinned: false };
       const updated = { ...section, notes: [...section.notes, newNote] };
-      setDoc(doc(db, `sections/${sectionId}`), updated);
+      setDoc(doc(db, `sections/${sectionId}`), updated).catch(console.error);
       set((state) => ({ sections: state.sections.map(s => s.id === sectionId ? updated : s) }));
     }
   },
@@ -264,7 +269,7 @@ export const useStore = create<AppState>()((set, get) => ({
         ...section,
         notes: section.notes.map(n => n.id === noteId ? { ...n, ...updates } : n)
       };
-      setDoc(doc(db, `sections/${sectionId}`), updated);
+      setDoc(doc(db, `sections/${sectionId}`), updated).catch(console.error);
       set((state) => ({ sections: state.sections.map(s => s.id === sectionId ? updated : s) }));
     }
   },
@@ -275,7 +280,7 @@ export const useStore = create<AppState>()((set, get) => ({
     if (section) {
       const newNotes = section.notes.filter(n => n.id !== noteId);
       const updated = { ...section, notes: newNotes };
-      setDoc(doc(db, `sections/${sectionId}`), updated);
+      setDoc(doc(db, `sections/${sectionId}`), updated).catch(console.error);
       
       let nextNoteId = state.activeNoteId;
       if (state.activeNoteId === noteId) {
@@ -297,8 +302,8 @@ export const useStore = create<AppState>()((set, get) => ({
         const newFrom = { ...fromSection, notes: fromSection.notes.filter(n => n.id !== noteId) };
         const newTo = { ...toSection, notes: [...toSection.notes, noteToMove] };
         
-        setDoc(doc(db, `sections/${fromSectionId}`), newFrom);
-        setDoc(doc(db, `sections/${toSectionId}`), newTo);
+        setDoc(doc(db, `sections/${fromSectionId}`), newFrom).catch(console.error);
+        setDoc(doc(db, `sections/${toSectionId}`), newTo).catch(console.error);
         
         set((state) => ({
           sections: state.sections.map(s => {
@@ -316,7 +321,7 @@ export const useStore = create<AppState>()((set, get) => ({
     const section = get().sections.find(s => s.id === sectionId);
     if (section) {
       const updated = { ...section, notes: arrayMove(section.notes, oldIndex, newIndex) };
-      setDoc(doc(db, `sections/${sectionId}`), updated);
+      setDoc(doc(db, `sections/${sectionId}`), updated).catch(console.error);
       set((state) => ({ sections: state.sections.map(s => s.id === sectionId ? updated : s) }));
     }
   },
@@ -328,7 +333,7 @@ export const useStore = create<AppState>()((set, get) => ({
         ...section,
         notes: section.notes.map(n => n.id === noteId ? { ...n, pinned: !n.pinned } : n)
       };
-      setDoc(doc(db, `sections/${sectionId}`), updated);
+      setDoc(doc(db, `sections/${sectionId}`), updated).catch(console.error);
       set((state) => ({ sections: state.sections.map(s => s.id === sectionId ? updated : s) }));
     }
   },

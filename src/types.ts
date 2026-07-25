@@ -11,6 +11,7 @@ export interface Section {
   notes: Note[];
   collapsed: boolean;
   model: string; // 'Shared' or specific model like 'Aska'
+  order?: number;
 }
 
 export interface User {

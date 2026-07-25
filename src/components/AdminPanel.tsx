@@ -130,9 +130,8 @@ export function AdminPanel() {
       // Delete their day-offs
       const q = query(collection(db, 'dayOffs'), where('operator', '==', name));
       const snap = await getDocs(q);
-      snap.forEach(d => {
-        deleteDoc(d.ref);
-      });
+      const deletePromises = snap.docs.map(d => deleteDoc(d.ref).catch(console.error));
+      await Promise.all(deletePromises);
       
     } catch (err: any) {
       console.error("Ошибка удаления", err);
