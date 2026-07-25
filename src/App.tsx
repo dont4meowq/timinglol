@@ -8,6 +8,8 @@ import { CrmPanel } from './components/CrmPanel';
 import { SchedulePanel } from './components/SchedulePanel';
 import { BonusesPanel } from './components/BonusesPanel';
 import { RoulettePanel } from './components/RoulettePanel';
+import { GuidesPanel } from './components/GuidesPanel';
+import { CustomsPanel } from './components/CustomsPanel';
 import { useStore } from './store';
 import { useFirebaseSync } from './hooks/useFirebaseSync';
 import { Search, Menu } from 'lucide-react';
@@ -103,6 +105,10 @@ export default function App() {
         <BonusesPanel />
       ) : appView === 'roulette' ? (
         <RoulettePanel />
+      ) : appView === 'guides' ? (
+        <GuidesPanel />
+      ) : appView === 'customs' ? (
+        <CustomsPanel />
       ) : (
         <div className="flex-1 flex flex-col min-w-0 w-full">
           <TabList />

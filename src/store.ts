@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Section, Note, User, Fan, DayOff, ModelInfo, Bonus } from './types';
+import { Section, Note, User, Fan, DayOff, ModelInfo, Bonus, Guide, Custom } from './types';
 import { arrayMove } from '@dnd-kit/sortable';
 import { auth, db } from './firebase';
 import { doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
@@ -13,31 +13,44 @@ interface AppState {
 
   allUsers: User[];
   currentUser: User | null;
-  appView: 'dashboard' | 'admin' | 'crm' | 'schedule' | 'bonuses' | 'roulette';
+  appView: 'dashboard' | 'admin' | 'crm' | 'schedule' | 'bonuses' | 'roulette' | 'guides' | 'customs';
   fans: Fan[];
+  customs: Custom[];
   models: ModelInfo[];
   dayOffs: DayOff[];
   bonuses: Bonus[];
+  guides: Guide[];
   
   activeModel: string;
 
   // Actions
-  setAppView: (view: 'dashboard' | 'admin' | 'crm' | 'schedule' | 'bonuses' | 'roulette') => void;
+  setAppView: (view: 'dashboard' | 'admin' | 'crm' | 'schedule' | 'bonuses' | 'roulette' | 'guides' | 'customs') => void;
   setActiveModel: (model: string) => void;
   
   setCurrentUser: (user: User | null) => void;
   setAllUsers: (users: User[]) => void;
   setFans: (fans: Fan[]) => void;
+  setCustoms: (customs: Custom[]) => void;
   setModels: (models: ModelInfo[]) => void;
   setDayOffs: (dayOffs: DayOff[]) => void;
   setBonuses: (bonuses: Bonus[]) => void;
+  setGuides: (guides: Guide[]) => void;
   addBonus: (bonus: Omit<Bonus, 'id'>) => void;
   deleteBonus: (id: string) => void;
   setSections: (sections: Section[]) => void;
 
+  addGuide: (guide: Omit<Guide, 'id' | 'likes' | 'createdAt'>) => void;
+  updateGuide: (id: string, updates: Partial<Guide>) => void;
+  deleteGuide: (id: string) => void;
+  toggleGuideLike: (id: string, userId: string) => void;
+
   addFan: (fan: Omit<Fan, 'id'>) => void;
   updateFan: (id: string, fan: Partial<Fan>) => void;
   deleteFan: (id: string) => void;
+
+  addCustom: (custom: Omit<Custom, 'id' | 'createdAt'>) => void;
+  updateCustom: (id: string, custom: Partial<Custom>) => void;
+  deleteCustom: (id: string) => void;
   
   addDayOff: (dayOff: Omit<DayOff, "id">) => void;
   deleteDayOff: (id: string) => void;
@@ -73,9 +86,11 @@ export const useStore = create<AppState>()((set, get) => ({
   currentUser: null,
   appView: 'dashboard',
   fans: [],
+  customs: [],
   models: [],
   dayOffs: [],
   bonuses: [],
+  guides: [],
   activeModel: 'Shared',
 
   setAppView: (view) => set({ appView: view }),
@@ -84,9 +99,11 @@ export const useStore = create<AppState>()((set, get) => ({
   setCurrentUser: (user) => set({ currentUser: user }),
   setAllUsers: (users) => set({ allUsers: users }),
   setFans: (fans) => set({ fans }),
+  setCustoms: (customs) => set({ customs }),
   setModels: (models) => set({ models }),
   setDayOffs: (dayOffs) => set({ dayOffs }),
   setBonuses: (bonuses) => set({ bonuses }),
+  setGuides: (guides) => set({ guides }),
   addBonus: (bonus) => {
     const id = generateId();
     const obj = { ...bonus, id };
@@ -97,6 +114,30 @@ export const useStore = create<AppState>()((set, get) => ({
     deleteDoc(doc(db, `bonuses/${id}`));
     set((state) => ({ bonuses: state.bonuses.filter(b => b.id !== id) }));
   },
+  
+  addGuide: (guide) => {
+    const id = generateId();
+    const obj = { ...guide, id, likes: [], createdAt: Date.now() };
+    setDoc(doc(db, `guides/${id}`), obj);
+    set((state) => ({ guides: [...state.guides, obj] }));
+  },
+  updateGuide: (id, updates) => {
+    updateDoc(doc(db, `guides/${id}`), updates);
+    set((state) => ({ guides: state.guides.map(g => g.id === id ? { ...g, ...updates } : g) }));
+  },
+  deleteGuide: (id) => {
+    deleteDoc(doc(db, `guides/${id}`));
+    set((state) => ({ guides: state.guides.filter(g => g.id !== id) }));
+  },
+  toggleGuideLike: (id, userId) => {
+    const guide = get().guides.find(g => g.id === id);
+    if (!guide) return;
+    const isLiked = guide.likes.includes(userId);
+    const newLikes = isLiked ? guide.likes.filter(u => u !== userId) : [...guide.likes, userId];
+    updateDoc(doc(db, `guides/${id}`), { likes: newLikes });
+    set((state) => ({ guides: state.guides.map(g => g.id === id ? { ...g, likes: newLikes } : g) }));
+  },
+  
   setSections: (sections) => {
     set((state) => {
       // Ensure active selection is valid
@@ -127,6 +168,21 @@ export const useStore = create<AppState>()((set, get) => ({
   deleteFan: (id) => {
     deleteDoc(doc(db, `fans/${id}`));
     set((state) => ({ fans: state.fans.filter(f => f.id !== id) }));
+  },
+
+  addCustom: (custom) => {
+    const id = generateId();
+    const obj = { ...custom, id, createdAt: Date.now() };
+    setDoc(doc(db, `customs/${id}`), obj);
+    set((state) => ({ customs: [...state.customs, obj] }));
+  },
+  updateCustom: (id, updates) => {
+    updateDoc(doc(db, `customs/${id}`), updates);
+    set((state) => ({ customs: state.customs.map(c => c.id === id ? { ...c, ...updates } : c) }));
+  },
+  deleteCustom: (id) => {
+    deleteDoc(doc(db, `customs/${id}`));
+    set((state) => ({ customs: state.customs.filter(c => c.id !== id) }));
   },
   
   addDayOff: (dayOff) => {

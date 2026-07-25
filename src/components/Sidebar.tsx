@@ -4,7 +4,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
 import { logOut } from '../firebase';
-import { Folder, FolderOpen, Plus, MoreHorizontal, Edit2, Trash2, LogOut, Shield, Users, FileText, Calendar, Gift, Dices } from 'lucide-react';
+import { Folder, FolderOpen, Plus, MoreHorizontal, Edit2, Trash2, LogOut, Shield, Users, FileText, Calendar, Gift, Dices, BookOpen, Camera } from 'lucide-react';
 
 export function Sidebar() {
   const { 
@@ -113,6 +113,20 @@ export function Sidebar() {
         >
           <Dices size={18} />
           <span className="font-medium">Рулетка</span>
+        </button>
+        <button 
+          onClick={() => { setAppView('guides'); setSidebarOpen(false); }}
+          className={`w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${appView === 'guides' ? 'bg-blue-600/20 text-blue-400' : 'hover:bg-[#2a2d2e]'}`}
+        >
+          <BookOpen size={18} />
+          <span className="font-medium">Гайды</span>
+        </button>
+        <button 
+          onClick={() => { setAppView('customs'); setSidebarOpen(false); }}
+          className={`w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${appView === 'customs' ? 'bg-blue-600/20 text-blue-400' : 'hover:bg-[#2a2d2e]'}`}
+        >
+          <Camera size={18} />
+          <span className="font-medium">Кастомы</span>
         </button>
         <button 
           onClick={() => { setAppView('dashboard'); setSidebarOpen(false); }}

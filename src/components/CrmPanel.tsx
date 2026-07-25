@@ -15,7 +15,8 @@ export function CrmPanel() {
     spending: 'normal',
     timezone: '',
     notes: '',
-    tagColor: 'none'
+    tagColor: 'none',
+    link: ''
   });
   
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -55,7 +56,8 @@ export function CrmPanel() {
       spending: fan.spending || 'normal',
       timezone: fan.timezone || '',
       notes: fan.notes || '',
-      tagColor: fan.tagColor || 'none'
+      tagColor: fan.tagColor || 'none',
+      link: fan.link || ''
     });
     setEditingId(fan.id);
     setIsFormOpen(true);
@@ -197,6 +199,11 @@ export function CrmPanel() {
                 <label className="block text-sm font-medium text-neutral-400 mb-1">Заметки по фетишам</label>
                 <input type="text" value={form.fetishes} onChange={e => setForm({...form, fetishes: e.target.value})} className="w-full bg-[#1e1e1e] border border-neutral-700 text-white rounded px-3 py-2 outline-none focus:border-blue-500" />
               </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-neutral-400 mb-1">Ссылка на фаната</label>
+                <input type="text" value={form.link || ''} onChange={e => setForm({...form, link: e.target.value})} className="w-full bg-[#1e1e1e] border border-neutral-700 text-white rounded px-3 py-2 outline-none focus:border-blue-500" />
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -322,6 +329,16 @@ export function CrmPanel() {
                       <div className="flex items-center gap-3 bg-[#1e1e1e] p-3 rounded-lg border border-neutral-800">
                         <Clock size={18} className="text-blue-400" />
                         <span className="text-neutral-200">{viewingFan.timezone}</span>
+                      </div>
+                    </div>
+                  )}
+                  {viewingFan.link && (
+                    <div>
+                      <h3 className="text-sm font-medium text-neutral-500 mb-2 uppercase tracking-wider">Ссылка</h3>
+                      <div className="flex items-center gap-3 bg-[#1e1e1e] p-3 rounded-lg border border-neutral-800">
+                        <a href={viewingFan.link.startsWith('http') ? viewingFan.link : `https://${viewingFan.link}`} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline break-all">
+                          {viewingFan.link}
+                        </a>
                       </div>
                     </div>
                   )}

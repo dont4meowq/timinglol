@@ -13,7 +13,9 @@ export function useFirebaseSync() {
     setModels, 
     setSections,
     setAllUsers,
-    setBonuses
+    setBonuses,
+    setGuides,
+    setCustoms
   } = useStore();
 
   const [loading, setLoading] = useState(true);
@@ -96,6 +98,24 @@ export function useFirebaseSync() {
       })
     );
 
+    // Guides
+    unsubs.push(
+      onSnapshot(collection(db, 'guides'), (snap) => {
+        setGuides(snap.docs.map(d => ({ id: d.id, ...d.data() } as any)).sort((a, b) => b.createdAt - a.createdAt));
+      })
+    );
+
+    // Customs
+    const customsQuery = currentUser.role === 'admin' 
+      ? collection(db, 'customs')
+      : query(collection(db, 'customs'), where('model', '==', currentUser.assignedModel));
+      
+    unsubs.push(
+      onSnapshot(customsQuery, (snap) => {
+        setCustoms(snap.docs.map(d => ({ id: d.id, ...d.data() } as any)).sort((a, b) => b.createdAt - a.createdAt));
+      })
+    );
+
     // Models
     unsubs.push(
       onSnapshot(collection(db, 'models'), (snap) => {
@@ -104,7 +124,7 @@ export function useFirebaseSync() {
     );
 
     return () => unsubs.forEach(u => u());
-  }, [currentUser, setFans, setDayOffs, setSections, setAllUsers, setModels, setBonuses]);
+  }, [currentUser, setFans, setDayOffs, setSections, setAllUsers, setModels, setBonuses, setGuides]);
 
   return { loading };
 }

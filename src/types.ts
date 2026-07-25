@@ -30,6 +30,21 @@ export interface Fan {
   timezone: string;
   notes: string;
   tagColor: 'red' | 'gold' | 'green' | 'blue' | 'none';
+  link?: string;
+}
+
+export interface Custom {
+  id: string;
+  model: string;
+  fanLink: string;
+  price: string;
+  duration: string;
+  outfit: string;
+  request: string;
+  status: 'pending' | 'done' | 'declined';
+  authorId: string;
+  authorName: string;
+  createdAt: number;
 }
 
 export interface DayOff {
@@ -43,6 +58,25 @@ export interface DayOff {
 export interface ModelInfo {
   id: string;
   name: string;
+}
+
+export interface Guide {
+  id: string;
+  title: string;
+  content: string;
+  authorId: string;
+  authorName: string;
+  createdAt: number;
+  likes: string[];
+}
+
+export interface GuideComment {
+  id: string;
+  guideId: string;
+  authorId: string;
+  authorName: string;
+  content: string;
+  createdAt: number;
 }
 
 export interface Bonus {
