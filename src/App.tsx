@@ -9,6 +9,7 @@ import { SchedulePanel } from './components/SchedulePanel';
 import { BonusesPanel } from './components/BonusesPanel';
 import { RoulettePanel } from './components/RoulettePanel';
 import { GuidesPanel } from './components/GuidesPanel';
+import { ContestsPanel } from './components/ContestsPanel';
 import { CustomsPanel } from './components/CustomsPanel';
 import { useStore } from './store';
 import { useFirebaseSync } from './hooks/useFirebaseSync';
@@ -107,6 +108,8 @@ export default function App() {
         <RoulettePanel />
       ) : appView === 'guides' ? (
         <GuidesPanel />
+      ) : appView === 'contests' ? (
+        <ContestsPanel />
       ) : appView === 'customs' ? (
         <CustomsPanel />
       ) : (

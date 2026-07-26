@@ -4,7 +4,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
 import { logOut } from '../firebase';
-import { Folder, FolderOpen, Plus, MoreHorizontal, Edit2, Trash2, LogOut, Shield, Users, FileText, Calendar, Gift, Dices, BookOpen, Camera } from 'lucide-react';
+import { Folder, FolderOpen, Plus, MoreHorizontal, Edit2, Trash2, LogOut, Shield, Users, FileText, Calendar, Gift, Dices, BookOpen, Camera, Trophy } from 'lucide-react';
 
 export function Sidebar() {
   const { 
@@ -120,6 +120,13 @@ export function Sidebar() {
         >
           <BookOpen size={18} />
           <span className="font-medium">Гайды</span>
+        </button>
+        <button 
+          onClick={() => { setAppView('contests'); setSidebarOpen(false); }}
+          className={`w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${appView === 'contests' ? 'bg-orange-600/20 text-orange-400' : 'hover:bg-[#2a2d2e]'}`}
+        >
+          <Trophy size={18} />
+          <span className="font-medium">Конкурсы</span>
         </button>
         <button 
           onClick={() => { setAppView('customs'); setSidebarOpen(false); }}

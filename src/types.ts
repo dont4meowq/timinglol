@@ -37,12 +37,10 @@ export interface Fan {
 export interface Custom {
   id: string;
   model: string;
+  customNumber: string;
   fanLink: string;
-  price: string;
-  duration: string;
-  outfit: string;
-  request: string;
   status: 'pending' | 'done' | 'declined';
+  statusComment?: string;
   authorId: string;
   authorName: string;
   createdAt: number;
@@ -86,4 +84,24 @@ export interface Bonus {
   amount: number;
   description: string;
   date: string; // ISO string
+}
+
+export interface Contest {
+  id: string;
+  title: string;
+  content: string; // Description and image links can be in markdown or just text/HTML? Wait, guides use markdown? Let's check GuidesPanel.
+  imageUrls?: string[];
+  authorId: string;
+  authorName: string;
+  createdAt: number;
+  likes: string[];
+}
+
+export interface ContestComment {
+  id: string;
+  contestId: string;
+  authorId: string;
+  authorName: string;
+  content: string;
+  createdAt: number;
 }

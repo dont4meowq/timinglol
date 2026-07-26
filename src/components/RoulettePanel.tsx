@@ -50,13 +50,14 @@ const colors = [
 ];
 
 export function RoulettePanel() {
-  const { setAppView } = useStore();
-  const [activeRouletteId, setActiveRouletteId] = useState<string>(ROULETTES[0].id);
+  const { setAppView, currentUser } = useStore();
+  const availableRoulettes = currentUser?.role === 'admin' ? ROULETTES : ROULETTES.filter(r => r.id !== 'money');
+  const [activeRouletteId, setActiveRouletteId] = useState<string>(availableRoulettes[0].id);
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [winner, setWinner] = useState<string | null>(null);
 
-  const activeRoulette = ROULETTES.find(r => r.id === activeRouletteId) || ROULETTES[0];
+  const activeRoulette = availableRoulettes.find(r => r.id === activeRouletteId) || availableRoulettes[0];
   const prizes = activeRoulette.prizes;
 
   const spinWheel = () => {
@@ -121,27 +122,29 @@ export function RoulettePanel() {
             Рулетка
           </h1>
         </div>
-        <div className="flex bg-neutral-800 rounded-lg p-1">
-          {ROULETTES.map((roulette) => (
-            <button
-              key={roulette.id}
-              disabled={isSpinning}
-              onClick={() => {
-                setActiveRouletteId(roulette.id);
-                setWinner(null);
-                setRotation(0);
-              }}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
-                activeRouletteId === roulette.id 
-                  ? 'bg-neutral-700 text-white shadow' 
-                  : 'text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800/50'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
-            >
-              <roulette.icon size={16} className={activeRouletteId === roulette.id ? "text-pink-400" : ""} />
-              {roulette.name}
-            </button>
-          ))}
-        </div>
+        {availableRoulettes.length > 1 && (
+          <div className="flex bg-neutral-800 rounded-lg p-1">
+            {availableRoulettes.map((roulette) => (
+              <button
+                key={roulette.id}
+                disabled={isSpinning}
+                onClick={() => {
+                  setActiveRouletteId(roulette.id);
+                  setWinner(null);
+                  setRotation(0);
+                }}
+                className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                  activeRouletteId === roulette.id 
+                    ? 'bg-neutral-700 text-white shadow' 
+                    : 'text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800/50'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                <roulette.icon size={16} className={activeRouletteId === roulette.id ? "text-pink-400" : ""} />
+                {roulette.name}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center p-8 relative">

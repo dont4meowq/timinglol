@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Section, Note, User, Fan, DayOff, ModelInfo, Bonus, Guide, Custom } from './types';
+import { Section, Note, User, Fan, DayOff, ModelInfo, Bonus, Guide, Custom , Contest} from './types';
 import { arrayMove } from '@dnd-kit/sortable';
 import { auth, db } from './firebase';
 import { doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
@@ -13,18 +13,19 @@ interface AppState {
 
   allUsers: User[];
   currentUser: User | null;
-  appView: 'dashboard' | 'admin' | 'crm' | 'schedule' | 'bonuses' | 'roulette' | 'guides' | 'customs';
+  appView: 'dashboard' | 'admin' | 'crm' | 'schedule' | 'bonuses' | 'roulette' | 'guides' | 'customs' | 'contests';
   fans: Fan[];
   customs: Custom[];
   models: ModelInfo[];
   dayOffs: DayOff[];
   bonuses: Bonus[];
   guides: Guide[];
+  contests: Contest[];
   
   activeModel: string;
 
   // Actions
-  setAppView: (view: 'dashboard' | 'admin' | 'crm' | 'schedule' | 'bonuses' | 'roulette' | 'guides' | 'customs') => void;
+  setAppView: (view: 'dashboard' | 'admin' | 'crm' | 'schedule' | 'bonuses' | 'roulette' | 'guides' | 'customs' | 'contests') => void;
   setActiveModel: (model: string) => void;
   
   setCurrentUser: (user: User | null) => void;
@@ -35,6 +36,7 @@ interface AppState {
   setDayOffs: (dayOffs: DayOff[]) => void;
   setBonuses: (bonuses: Bonus[]) => void;
   setGuides: (guides: Guide[]) => void;
+  setContests: (contests: Contest[]) => void;
   addBonus: (bonus: Omit<Bonus, 'id'>) => void;
   deleteBonus: (id: string) => void;
   setSections: (sections: Section[]) => void;
@@ -43,6 +45,10 @@ interface AppState {
   updateGuide: (id: string, updates: Partial<Guide>) => void;
   deleteGuide: (id: string) => void;
   toggleGuideLike: (id: string, userId: string) => void;
+  addContest: (contest: Omit<Contest, 'id' | 'likes' | 'createdAt'>) => void;
+  updateContest: (id: string, updates: Partial<Contest>) => void;
+  deleteContest: (id: string) => void;
+  toggleContestLike: (id: string, userId: string) => void;
 
   addFan: (fan: Omit<Fan, 'id'>) => void;
   updateFan: (id: string, fan: Partial<Fan>) => void;
@@ -91,6 +97,7 @@ export const useStore = create<AppState>()((set, get) => ({
   dayOffs: [],
   bonuses: [],
   guides: [],
+  contests: [],
   activeModel: 'Shared',
 
   setAppView: (view) => set({ appView: view }),
@@ -104,6 +111,7 @@ export const useStore = create<AppState>()((set, get) => ({
   setDayOffs: (dayOffs) => set({ dayOffs }),
   setBonuses: (bonuses) => set({ bonuses }),
   setGuides: (guides) => set({ guides }),
+  setContests: (contests) => set({ contests }),
   addBonus: (bonus) => {
     const id = generateId();
     const obj = { ...bonus, id };
@@ -137,6 +145,29 @@ export const useStore = create<AppState>()((set, get) => ({
     updateDoc(doc(db, `guides/${id}`), { likes: newLikes }).catch(console.error);
     set((state) => ({ guides: state.guides.map(g => g.id === id ? { ...g, likes: newLikes } : g) }));
   },
+  addContest: (contest) => {
+    const id = generateId();
+    const obj = { ...contest, id, likes: [], createdAt: Date.now() };
+    setDoc(doc(db, `contests/${id}`), obj).catch(console.error);
+    set((state) => ({ contests: [...state.contests, obj] }));
+  },
+  updateContest: (id, updates) => {
+    updateDoc(doc(db, `contests/${id}`), updates).catch(console.error);
+    set((state) => ({ contests: state.contests.map(c => c.id === id ? { ...c, ...updates } : c) }));
+  },
+  deleteContest: (id) => {
+    deleteDoc(doc(db, `contests/${id}`)).catch(console.error);
+    set((state) => ({ contests: state.contests.filter(c => c.id !== id) }));
+  },
+  toggleContestLike: (id, userId) => {
+    const contest = get().contests.find(c => c.id === id);
+    if (!contest) return;
+    const isLiked = contest.likes.includes(userId);
+    const newLikes = isLiked ? contest.likes.filter(u => u !== userId) : [...contest.likes, userId];
+    updateDoc(doc(db, `contests/${id}`), { likes: newLikes }).catch(console.error);
+    set((state) => ({ contests: state.contests.map(c => c.id === id ? { ...c, likes: newLikes } : c) }));
+  },
+
   
   setSections: (sections) => {
     set((state) => {

@@ -105,6 +105,11 @@ export function useFirebaseSync() {
         setGuides(snap.docs.map(d => ({ id: d.id, ...d.data() } as any)).sort((a, b) => b.createdAt - a.createdAt));
       })
     );
+    unsubs.push(
+      onSnapshot(collection(db, 'contests'), (snap) => {
+        useStore.getState().setContests(snap.docs.map(d => ({ id: d.id, ...d.data() } as any)).sort((a, b) => b.createdAt - a.createdAt));
+      })
+    );
 
     // Customs
     const customsQuery = currentUser.role === 'admin' 

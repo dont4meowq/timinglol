@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../store';
-import { Plus, Search, Trash2, Edit2, Clock, Check, X, Link, DollarSign, Shirt } from 'lucide-react';
+import { Plus, Search, Trash2, Edit2, Check, X, Link, Hash, MessageSquare } from 'lucide-react';
 import { Custom } from '../types';
 
 const statusColors = {
@@ -28,12 +28,10 @@ export function CustomsPanel() {
 
   const [form, setForm] = useState<Omit<Custom, 'id' | 'createdAt'>>({
     model: formDefaultModel,
+    customNumber: '',
     fanLink: '',
-    price: '',
-    duration: '',
-    outfit: '',
-    request: '',
     status: 'pending',
+    statusComment: '',
     authorId: currentUser?.id || '',
     authorName: currentUser?.name || ''
   });
@@ -52,8 +50,8 @@ export function CustomsPanel() {
     if (selectedModelFilter !== 'all' && c.model !== selectedModelFilter) return false;
     const s = search.toLowerCase();
     return (c.fanLink || '').toLowerCase().includes(s) || 
-           (c.outfit || '').toLowerCase().includes(s) ||
-           (c.request || '').toLowerCase().includes(s);
+           (c.customNumber || '').toLowerCase().includes(s) ||
+           (c.statusComment || '').toLowerCase().includes(s);
   }).sort((a, b) => b.createdAt - a.createdAt);
 
   const handleSave = (e: React.FormEvent) => {
@@ -70,18 +68,16 @@ export function CustomsPanel() {
     }
     setIsFormOpen(false);
     setEditingId(null);
-    setForm({ model: formDefaultModel, fanLink: '', price: '', duration: '', outfit: '', request: '', status: 'pending', authorId: currentUser?.id || '', authorName: currentUser?.name || '' });
+    setForm({ model: formDefaultModel, customNumber: '', fanLink: '', status: 'pending', statusComment: '', authorId: currentUser?.id || '', authorName: currentUser?.name || '' });
   };
 
   const handleEdit = (custom: Custom) => {
     setForm({
       model: custom.model,
+      customNumber: custom.customNumber || '',
       fanLink: custom.fanLink || '',
-      price: custom.price || '',
-      duration: custom.duration || '',
-      outfit: custom.outfit || '',
-      request: custom.request || '',
       status: custom.status || 'pending',
+      statusComment: custom.statusComment || '',
       authorId: custom.authorId || currentUser?.id || '',
       authorName: custom.authorName || currentUser?.name || ''
     });
@@ -129,7 +125,7 @@ export function CustomsPanel() {
           </div>
           <button 
             onClick={() => {
-              setForm({ model: formDefaultModel, fanLink: '', price: '', duration: '', outfit: '', request: '', status: 'pending', authorId: currentUser?.id || '', authorName: currentUser?.name || '' });
+              setForm({ model: formDefaultModel, customNumber: '', fanLink: '', status: 'pending', statusComment: '', authorId: currentUser?.id || '', authorName: currentUser?.name || '' });
               setEditingId(null);
               setIsFormOpen(true);
             }}
@@ -151,7 +147,7 @@ export function CustomsPanel() {
               <div className="p-4 border-b border-neutral-800 flex justify-between items-start bg-neutral-900/30">
                 <div className="flex items-center gap-3 flex-wrap">
                   <div className={`w-3 h-3 shrink-0 rounded-full ${statusColors[custom.status]} shadow-[0_0_8px_rgba(0,0,0,0.5)]`} />
-                  <span className="font-semibold text-white truncate max-w-[200px] text-sm uppercase tracking-wider">{custom.price}</span>
+                  <span className="font-semibold text-white truncate max-w-[200px] text-sm uppercase tracking-wider">Кастом #{custom.customNumber}</span>
                   {currentUser?.role === 'admin' && selectedModelFilter === 'all' && (
                     <span className="text-xs bg-blue-600/20 text-blue-400 px-2 py-0.5 rounded ml-2">{custom.model}</span>
                   )}
@@ -173,19 +169,14 @@ export function CustomsPanel() {
               </div>
               
               <div className="p-4 flex-1 flex flex-col gap-3">
-                <div className="text-sm text-neutral-300 line-clamp-3 mb-2">{custom.request}</div>
-                <div className="mt-auto flex flex-wrap gap-2">
-                  {custom.duration && (
-                    <span className="inline-flex items-center gap-1.5 bg-[#1e1e1e] border border-neutral-800 text-neutral-400 px-2 py-1 rounded text-xs">
-                      <Clock size={12} /> {custom.duration}
-                    </span>
-                  )}
-                  {custom.outfit && (
-                    <span className="inline-flex items-center gap-1.5 bg-[#1e1e1e] border border-neutral-800 text-neutral-400 px-2 py-1 rounded text-xs">
-                      <Shirt size={12} /> {custom.outfit}
-                    </span>
-                  )}
+                <div className="text-sm text-blue-400 truncate mb-2">
+                  <Link size={14} className="inline mr-1" /> {custom.fanLink}
                 </div>
+                {currentUser?.role === 'admin' && custom.statusComment && (
+                  <div className="mt-auto text-sm text-neutral-400 line-clamp-3 bg-neutral-900/50 p-2 rounded-lg border border-neutral-800">
+                    <MessageSquare size={14} className="inline mr-1" /> {custom.statusComment}
+                  </div>
+                )}
               </div>
               <div className="px-4 py-2 bg-neutral-900/50 border-t border-neutral-800 text-xs text-neutral-500 flex justify-between">
                 <span>{new Date(custom.createdAt).toLocaleDateString('ru-RU')}</span>
@@ -224,42 +215,34 @@ export function CustomsPanel() {
                 </div>
               )}
               
-              <div>
-                <label className="block text-sm font-medium text-neutral-400 mb-1">Ссылка на фаната</label>
-                <input required type="text" value={form.fanLink} onChange={e => setForm({...form, fanLink: e.target.value})} className="w-full bg-[#1e1e1e] border border-neutral-700 text-white rounded px-3 py-2 outline-none focus:border-blue-500" />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-400 mb-1">Цена</label>
-                  <input required type="text" placeholder="$100" value={form.price} onChange={e => setForm({...form, price: e.target.value})} className="w-full bg-[#1e1e1e] border border-neutral-700 text-white rounded px-3 py-2 outline-none focus:border-blue-500" />
+                  <label className="block text-sm font-medium text-neutral-400 mb-1">Номер кастома</label>
+                  <input required type="text" placeholder="Например: #1234" value={form.customNumber} onChange={e => setForm({...form, customNumber: e.target.value})} className="w-full bg-[#1e1e1e] border border-neutral-700 text-white rounded px-3 py-2 outline-none focus:border-blue-500" />
                 </div>
+                
                 <div>
-                  <label className="block text-sm font-medium text-neutral-400 mb-1">Длительность</label>
-                  <input required type="text" placeholder="10 мин" value={form.duration} onChange={e => setForm({...form, duration: e.target.value})} className="w-full bg-[#1e1e1e] border border-neutral-700 text-white rounded px-3 py-2 outline-none focus:border-blue-500" />
+                  <label className="block text-sm font-medium text-neutral-400 mb-1">Ссылка на фаната</label>
+                  <input required type="text" value={form.fanLink} onChange={e => setForm({...form, fanLink: e.target.value})} className="w-full bg-[#1e1e1e] border border-neutral-700 text-white rounded px-3 py-2 outline-none focus:border-blue-500" />
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-400 mb-1">Образ</label>
-                <input required type="text" placeholder="Школьная форма" value={form.outfit} onChange={e => setForm({...form, outfit: e.target.value})} className="w-full bg-[#1e1e1e] border border-neutral-700 text-white rounded px-3 py-2 outline-none focus:border-blue-500" />
               </div>
               
               {currentUser?.role === 'admin' && (
-                <div>
-                  <label className="block text-sm font-medium text-neutral-400 mb-1">Статус</label>
-                  <select value={form.status} onChange={e => setForm({...form, status: e.target.value as Custom['status']})} className="w-full bg-[#1e1e1e] border border-neutral-700 text-white rounded px-3 py-2 outline-none focus:border-blue-500 appearance-none">
-                    <option value="pending">Ожидание</option>
-                    <option value="done">Сделано</option>
-                    <option value="declined">Отказано</option>
-                  </select>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-400 mb-1">Статус</label>
+                    <select value={form.status} onChange={e => setForm({...form, status: e.target.value as Custom['status']})} className="w-full bg-[#1e1e1e] border border-neutral-700 text-white rounded px-3 py-2 outline-none focus:border-blue-500 appearance-none">
+                      <option value="pending">Ожидание</option>
+                      <option value="done">Сделано</option>
+                      <option value="declined">Отказано</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-400 mb-1">Комментарий к статусу</label>
+                    <textarea rows={3} placeholder="Причина отказа или другие детали..." value={form.statusComment || ''} onChange={e => setForm({...form, statusComment: e.target.value})} className="w-full bg-[#1e1e1e] border border-neutral-700 text-white rounded px-3 py-2 outline-none focus:border-blue-500 resize-none custom-scrollbar" />
+                  </div>
                 </div>
               )}
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-400 mb-1">Запрос (подробно)</label>
-                <textarea required rows={6} value={form.request} onChange={e => setForm({...form, request: e.target.value})} className="w-full bg-[#1e1e1e] border border-neutral-700 text-white rounded px-3 py-2 outline-none focus:border-blue-500 resize-none custom-scrollbar" />
-              </div>
 
               <div className="pt-4 flex justify-end gap-3 border-t border-neutral-800">
                 <button type="button" onClick={() => setIsFormOpen(false)} className="px-4 py-2 text-neutral-400 hover:text-white transition-colors">Отмена</button>
@@ -323,21 +306,9 @@ export function CustomsPanel() {
                     )}
                     <div className="flex items-center justify-between bg-[#1e1e1e] p-3 rounded-lg border border-neutral-800">
                       <div className="flex items-center gap-2 text-neutral-400">
-                        <DollarSign size={16} /> Цена
+                        <Hash size={16} /> Номер кастома
                       </div>
-                      <span className="text-white font-medium">{displayedCustom.price}</span>
-                    </div>
-                    <div className="flex items-center justify-between bg-[#1e1e1e] p-3 rounded-lg border border-neutral-800">
-                      <div className="flex items-center gap-2 text-neutral-400">
-                        <Clock size={16} /> Время
-                      </div>
-                      <span className="text-white">{displayedCustom.duration}</span>
-                    </div>
-                    <div className="flex items-center justify-between bg-[#1e1e1e] p-3 rounded-lg border border-neutral-800">
-                      <div className="flex items-center gap-2 text-neutral-400">
-                        <Shirt size={16} /> Образ
-                      </div>
-                      <span className="text-white">{displayedCustom.outfit}</span>
+                      <span className="text-white font-medium">{displayedCustom.customNumber}</span>
                     </div>
                   </div>
                 </div>
@@ -356,12 +327,14 @@ export function CustomsPanel() {
                 </div>
               </div>
 
-              <div className="flex-1 flex flex-col">
-                <h3 className="text-sm font-medium text-neutral-500 mb-2 uppercase tracking-wider">Запрос</h3>
-                <div className="flex-1 bg-[#1e1e1e] p-4 rounded-lg border border-neutral-800 text-neutral-300 whitespace-pre-wrap break-words overflow-y-auto custom-scrollbar text-base leading-relaxed">
-                  {displayedCustom.request}
+              {currentUser?.role === 'admin' && displayedCustom.statusComment && (
+                <div className="flex-1 flex flex-col">
+                  <h3 className="text-sm font-medium text-neutral-500 mb-2 uppercase tracking-wider">Комментарий к статусу</h3>
+                  <div className="flex-1 bg-[#1e1e1e] p-4 rounded-lg border border-neutral-800 text-neutral-300 whitespace-pre-wrap break-words overflow-y-auto custom-scrollbar text-base leading-relaxed">
+                    {displayedCustom.statusComment}
+                  </div>
                 </div>
-              </div>
+              )}
 
             </div>
           </div>
