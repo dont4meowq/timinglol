@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Section, Note, User, Fan, DayOff, ModelInfo, Bonus, Guide, Custom , Contest} from './types';
+import { Section, Note, User, Fan, DayOff, ModelInfo, Bonus, Guide, Custom , Contest, Roulette} from './types';
 import { arrayMove } from '@dnd-kit/sortable';
 import { auth, db } from './firebase';
 import { doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
@@ -21,6 +21,7 @@ interface AppState {
   bonuses: Bonus[];
   guides: Guide[];
   contests: Contest[];
+  roulettes: Roulette[];
   
   activeModel: string;
 
@@ -37,6 +38,10 @@ interface AppState {
   setBonuses: (bonuses: Bonus[]) => void;
   setGuides: (guides: Guide[]) => void;
   setContests: (contests: Contest[]) => void;
+  setRoulettes: (roulettes: Roulette[]) => void;
+  addRoulette: (roulette: Omit<Roulette, 'id'>) => void;
+  deleteRoulette: (id: string) => void;
+  updateRoulette: (id: string, updates: Partial<Roulette>) => void;
   addBonus: (bonus: Omit<Bonus, 'id'>) => void;
   deleteBonus: (id: string) => void;
   setSections: (sections: Section[]) => void;
@@ -98,6 +103,7 @@ export const useStore = create<AppState>()((set, get) => ({
   bonuses: [],
   guides: [],
   contests: [],
+  roulettes: [],
   activeModel: 'Shared',
 
   setAppView: (view) => set({ appView: view }),
@@ -112,6 +118,7 @@ export const useStore = create<AppState>()((set, get) => ({
   setBonuses: (bonuses) => set({ bonuses }),
   setGuides: (guides) => set({ guides }),
   setContests: (contests) => set({ contests }),
+  setRoulettes: (roulettes) => set({ roulettes }),
   addBonus: (bonus) => {
     const id = generateId();
     const obj = { ...bonus, id };
@@ -159,6 +166,21 @@ export const useStore = create<AppState>()((set, get) => ({
     deleteDoc(doc(db, `contests/${id}`)).catch(console.error);
     set((state) => ({ contests: state.contests.filter(c => c.id !== id) }));
   },
+  addRoulette: (roulette) => {
+    const id = generateId();
+    const obj = { ...roulette, id };
+    setDoc(doc(db, `roulettes/${id}`), obj).catch(console.error);
+    set((state) => ({ roulettes: [...state.roulettes, obj] }));
+  },
+  updateRoulette: (id, updates) => {
+    updateDoc(doc(db, `roulettes/${id}`), updates).catch(console.error);
+    set((state) => ({ roulettes: state.roulettes.map(r => r.id === id ? { ...r, ...updates } : r) }));
+  },
+  deleteRoulette: (id) => {
+    deleteDoc(doc(db, `roulettes/${id}`)).catch(console.error);
+    set((state) => ({ roulettes: state.roulettes.filter(r => r.id !== id) }));
+  },
+
   toggleContestLike: (id, userId) => {
     const contest = get().contests.find(c => c.id === id);
     if (!contest) return;

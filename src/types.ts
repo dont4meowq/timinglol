@@ -105,3 +105,11 @@ export interface ContestComment {
   content: string;
   createdAt: number;
 }
+
+export interface Roulette {
+  id: string;
+  name: string;
+  prizes: string[];
+  isAdminOnly: boolean;
+  authorId: string;
+}
