@@ -1,23 +1,46 @@
 import React, { useState } from 'react';
 import { useStore } from '../store';
-import { ArrowLeft, Dices } from 'lucide-react';
+import { ArrowLeft, Dices, Coins } from 'lucide-react';
 
-const prizes = [
-  "Sexy photo ❤️",
-  "Voice message 🎤",
-  "Sign Photo 🖊",
-  "Dickrate 🍆",
-  "Video 1 minute 📺",
-  "Sexting 5 minutes 🔥",
-  "Video 5 minute 📺",
-  "Sexting 10 minutes 🔥🔥",
-  "Video 10 minute 📺",
-  "Sexting 15 minutes 💦",
-  "Secret prize 🎁",
-  "Videochat 5 minute 📹",
-  "Videochat 10 minute 🎬",
-  "Custom video 🎞",
-  "VIP Access 👑"
+const ROULETTES = [
+  {
+    id: 'classic',
+    name: 'Классическая',
+    icon: Dices,
+    prizes: [
+      "Sexy photo ❤️",
+      "Voice message 🎤",
+      "Sign Photo 🖊",
+      "Dickrate 🍆",
+      "Video 1 minute 📺",
+      "Sexting 5 minutes 🔥",
+      "Video 5 minute 📺",
+      "Sexting 10 minutes 🔥🔥",
+      "Video 10 minute 📺",
+      "Sexting 15 minutes 💦",
+      "Secret prize 🎁",
+      "Videochat 5 minute 📹",
+      "Videochat 10 minute 🎬",
+      "Custom video 🎞",
+      "VIP Access 👑"
+    ]
+  },
+  {
+    id: 'money',
+    name: 'Денежная',
+    icon: Coins,
+    prizes: [
+      "+5$",
+      "+10$",
+      "+2$",
+      "0 (unlucky)",
+      "+2$",
+      "+5$",
+      "0 (unlucky)",
+      "+10$",
+      "+2$"
+    ]
+  }
 ];
 
 const colors = [
@@ -28,9 +51,13 @@ const colors = [
 
 export function RoulettePanel() {
   const { setAppView } = useStore();
+  const [activeRouletteId, setActiveRouletteId] = useState<string>(ROULETTES[0].id);
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [winner, setWinner] = useState<string | null>(null);
+
+  const activeRoulette = ROULETTES.find(r => r.id === activeRouletteId) || ROULETTES[0];
+  const prizes = activeRoulette.prizes;
 
   const spinWheel = () => {
     if (isSpinning) return;
@@ -49,7 +76,6 @@ export function RoulettePanel() {
     const randomOffset = (Math.random() - 0.5) * (sliceAngle * 0.8);
     
     const newRotation = rotation + (360 - currentMod) + targetBase + offset + randomOffset;
-
     setRotation(newRotation);
 
     setTimeout(() => {
@@ -82,17 +108,40 @@ export function RoulettePanel() {
   
   return (
     <div className="flex-1 flex flex-col bg-[#1e1e1e] overflow-hidden">
-      <div className="h-14 flex items-center px-4 border-b border-neutral-800 shrink-0 gap-4">
-        <button 
-          onClick={() => setAppView('dashboard')}
-          className="p-2 hover:bg-neutral-800 rounded-full text-neutral-400 hover:text-white transition-colors"
-        >
-          <ArrowLeft size={20} />
-        </button>
-        <h1 className="text-xl font-semibold text-white flex items-center gap-2">
-          <Dices size={20} className="text-pink-400" />
-          Рулетка
-        </h1>
+      <div className="h-14 flex items-center px-4 border-b border-neutral-800 shrink-0 gap-4 justify-between">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => setAppView('dashboard')}
+            className="p-2 hover:bg-neutral-800 rounded-full text-neutral-400 hover:text-white transition-colors"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <h1 className="text-xl font-semibold text-white flex items-center gap-2">
+            <Dices size={20} className="text-pink-400" />
+            Рулетка
+          </h1>
+        </div>
+        <div className="flex bg-neutral-800 rounded-lg p-1">
+          {ROULETTES.map((roulette) => (
+            <button
+              key={roulette.id}
+              disabled={isSpinning}
+              onClick={() => {
+                setActiveRouletteId(roulette.id);
+                setWinner(null);
+                setRotation(0);
+              }}
+              className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
+                activeRouletteId === roulette.id 
+                  ? 'bg-neutral-700 text-white shadow' 
+                  : 'text-neutral-400 hover:text-neutral-300 hover:bg-neutral-800/50'
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              <roulette.icon size={16} className={activeRouletteId === roulette.id ? "text-pink-400" : ""} />
+              {roulette.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center p-8 relative">
@@ -128,7 +177,7 @@ export function RoulettePanel() {
                       transformOrigin: '50% 50%',
                       transform: `rotate(${angle}deg)`,
                       textShadow: '1px 1px 3px rgba(0,0,0,0.9)',
-                      fontSize: '13px'
+                      fontSize: prizes.length > 10 ? '13px' : '16px'
                     }}
                   >
                     {prize}
@@ -139,7 +188,7 @@ export function RoulettePanel() {
             
             {/* Center dot */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 bg-[#2a2d2e] rounded-full border-4 border-neutral-700 z-10 flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
-              <Dices size={20} className="text-pink-400" />
+              <activeRoulette.icon size={20} className="text-pink-400" />
             </div>
           </div>
         </div>
@@ -151,7 +200,7 @@ export function RoulettePanel() {
         >
           <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 to-purple-600 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
           <div className="relative bg-[#1e1e1e] border border-neutral-700 text-white text-2xl font-black px-16 py-5 rounded-full transition-all group-hover:scale-105 disabled:group-hover:scale-100 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest flex items-center gap-3">
-            <Dices size={28} className={isSpinning ? "animate-spin text-pink-400" : "text-pink-400"} />
+            <activeRoulette.icon size={28} className={isSpinning ? "animate-spin text-pink-400" : "text-pink-400"} />
             <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent drop-shadow-sm">
               {isSpinning ? 'Крутится...' : 'КРУТИТЬ!'}
             </span>
