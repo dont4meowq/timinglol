@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Login } from './components/Login';
 import { AdminPanel } from './components/AdminPanel';
-import { CrmPanel } from './components/CrmPanel';
 import { SchedulePanel } from './components/SchedulePanel';
 import { BonusesPanel } from './components/BonusesPanel';
 import { RoulettePanel } from './components/RoulettePanel';
@@ -63,7 +62,7 @@ export default function App() {
         ) : appView === 'customs' ? (
           <CustomsPanel />
         ) : (
-          <CrmPanel />
+          <div className="flex-1 flex items-center justify-center text-neutral-500">Выберите раздел в меню</div>
         )}
       </div>
     </div>

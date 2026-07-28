@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { useStore } from '../store';
-import { Calendar as CalendarIcon, User, Plus, X, AlertCircle } from 'lucide-react';
-import { DayOff } from '../types';
+import { Calendar as CalendarIcon, Plus, X, AlertCircle } from 'lucide-react';
 
 export function SchedulePanel() {
-  const { dayOffs, addDayOff, deleteDayOff, fans, currentUser, models } = useStore();
+  const { dayOffs, addDayOff, deleteDayOff,  currentUser, models } = useStore();
   const [currentDate, setCurrentDate] = useState(new Date());
   
   const [modalOpen, setModalOpen] = useState(false);

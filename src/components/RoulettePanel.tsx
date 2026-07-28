@@ -131,7 +131,7 @@ export function RoulettePanel() {
       <div className="h-14 flex items-center px-4 border-b border-neutral-800 shrink-0 gap-4 justify-between">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setAppView('crm')}
+            onClick={() => setAppView('schedule')}
 
             className="p-2 hover:bg-neutral-800 rounded-full text-neutral-400 hover:text-white transition-colors"
           >

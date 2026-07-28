@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { User, Fan, DayOff, ModelInfo, Bonus, Guide, Custom , Contest, Roulette} from './types';
+import { User, DayOff, ModelInfo, Bonus, Guide, Custom , Contest, Roulette} from './types';
 import { arrayMove } from '@dnd-kit/sortable';
 import { auth, db } from './firebase';
 import { doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
@@ -11,8 +11,7 @@ interface AppState {
 
   allUsers: User[];
   currentUser: User | null;
-  appView: 'admin' | 'crm' | 'schedule' | 'bonuses' | 'roulette' | 'guides' | 'customs' | 'contests';
-  fans: Fan[];
+  appView: 'admin' | 'schedule' | 'bonuses' | 'roulette' | 'guides' | 'customs' | 'contests';
   customs: Custom[];
   models: ModelInfo[];
   dayOffs: DayOff[];
@@ -24,12 +23,11 @@ interface AppState {
   activeModel: string;
 
   // Actions
-  setAppView: (view: 'admin' | 'crm' | 'schedule' | 'bonuses' | 'roulette' | 'guides' | 'customs' | 'contests') => void;
+  setAppView: (view: 'admin' | 'schedule' | 'bonuses' | 'roulette' | 'guides' | 'customs' | 'contests') => void;
   setActiveModel: (model: string) => void;
   
   setCurrentUser: (user: User | null) => void;
   setAllUsers: (users: User[]) => void;
-  setFans: (fans: Fan[]) => void;
   setCustoms: (customs: Custom[]) => void;
   setModels: (models: ModelInfo[]) => void;
   setDayOffs: (dayOffs: DayOff[]) => void;
@@ -52,9 +50,6 @@ interface AppState {
   deleteContest: (id: string) => void;
   toggleContestLike: (id: string, userId: string) => void;
 
-  addFan: (fan: Omit<Fan, 'id'>) => void;
-  updateFan: (id: string, fan: Partial<Fan>) => void;
-  deleteFan: (id: string) => void;
   
   addCustom: (custom: Omit<Custom, 'id' | 'createdAt'>) => void;
   updateCustom: (id: string, custom: Partial<Custom>) => void;
@@ -70,8 +65,7 @@ export const useStore = create<AppState>((set, get) => ({
   sidebarOpen: false,
   allUsers: [],
   currentUser: null,
-  appView: 'crm',
-  fans: [],
+  appView: 'schedule',
   customs: [],
   models: [],
   dayOffs: [],
@@ -85,7 +79,6 @@ export const useStore = create<AppState>((set, get) => ({
   setActiveModel: (model) => set({ activeModel: model }),
   setCurrentUser: (user) => set({ currentUser: user }),
   setAllUsers: (users) => set({ allUsers: users }),
-  setFans: (fans) => set({ fans }),
   setCustoms: (customs) => set({ customs }),
   setModels: (models) => set({ models }),
   setDayOffs: (dayOffs) => set({ dayOffs }),
@@ -164,21 +157,6 @@ export const useStore = create<AppState>((set, get) => ({
     const newLikes = isLiked ? contest.likes.filter(u => u !== userId) : [...contest.likes, userId];
     updateDoc(doc(db, `contests/${id}`), { likes: newLikes }).catch(console.error);
     set((state) => ({ contests: state.contests.map(c => c.id === id ? { ...c, likes: newLikes } : c) }));
-  },
-
-  addFan: (fan) => {
-    const id = generateId();
-    const obj = { ...fan, id };
-    setDoc(doc(db, `fans/${id}`), obj).catch(console.error);
-    set((state) => ({ fans: [...state.fans, obj] }));
-  },
-  updateFan: (id, updates) => {
-    updateDoc(doc(db, `fans/${id}`), updates).catch(console.error);
-    set((state) => ({ fans: state.fans.map(f => f.id === id ? { ...f, ...updates } : f) }));
-  },
-  deleteFan: (id) => {
-    deleteDoc(doc(db, `fans/${id}`)).catch(console.error);
-    set((state) => ({ fans: state.fans.filter(f => f.id !== id) }));
   },
 
   addCustom: (custom) => {

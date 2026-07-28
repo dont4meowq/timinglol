@@ -10,17 +10,6 @@ export interface User {
   name: string;
 }
 
-export interface Fan {
-  id: string;
-  model: string;
-  nickname: string;
-  fetishes: string;
-  spending: 'whale' | 'normal' | 'low';
-  timezone: string;
-  notes: string;
-  tagColor: 'red' | 'gold' | 'green' | 'blue' | 'none';
-  link?: string;
-}
 
 export interface Custom {
   id: string;

@@ -1,24 +1,17 @@
 import React from 'react';
 import { useStore } from '../store';
 import { logOut } from '../firebase';
-import { Users, Calendar, Gift, Dices, BookOpen, Camera, Trophy, Shield, LogOut } from 'lucide-react';
+import { Calendar, Gift, Dices, BookOpen, Camera, Trophy, Shield, LogOut } from 'lucide-react';
 
 export function Sidebar() {
   const { 
-    currentUser, setAppView, models, appView, setSidebarOpen
+    currentUser, setAppView, appView, setSidebarOpen
   } = useStore();
 
   return (
     <div className="w-64 bg-[#181818] h-full flex flex-col border-r border-neutral-800 text-neutral-300">
       
       <div className="p-2 border-b border-neutral-800 space-y-1 shrink-0">
-        <button 
-          onClick={() => { setAppView('crm'); setSidebarOpen(false); }}
-          className={`w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${appView === 'crm' ? 'bg-blue-600/20 text-blue-400' : 'hover:bg-[#2a2d2e]'}`}
-        >
-          <Users size={18} />
-          <span className="font-medium">Заметки о фанатах</span>
-        </button>
         <button 
           onClick={() => { setAppView('schedule'); setSidebarOpen(false); }}
           className={`w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${appView === 'schedule' ? 'bg-blue-600/20 text-blue-400' : 'hover:bg-[#2a2d2e]'}`}
@@ -63,27 +56,7 @@ export function Sidebar() {
         </button>
       </div>
 
-      {appView === 'crm' ? (
-        <>
-          <div className="p-4 flex items-center justify-between shrink-0">
-            <h2 className="font-semibold text-sm uppercase tracking-wider text-neutral-400">Модели</h2>
-          </div>
-          <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-1 custom-scrollbar">
-            {models.map(m => m.name).filter(m => currentUser?.role === 'admin' || m === currentUser?.assignedModel).map(model => (
-              <button
-                key={model}
-                onClick={() => {
-                  useStore.getState().setActiveModel(model);
-                  setSidebarOpen(false);
-                }}
-                className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${useStore.getState().activeModel === model ? 'bg-[#2a2d2e] text-white' : 'text-neutral-400 hover:bg-[#2a2d2e] hover:text-neutral-200'}`}
-              >
-                {model}
-              </button>
-            ))}
-          </div>
-        </>
-      ) : <div className="flex-1" />}
+      <div className="flex-1" />
 
       <div className="p-4 border-t border-neutral-800 shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-2 overflow-hidden flex-1">

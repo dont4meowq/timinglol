@@ -91,10 +91,6 @@ export function AdminPanel() {
         const usersSnap = await getDocs(usersQ);
         usersSnap.forEach(d => updateDoc(d.ref, { assignedModel: newName }));
 
-        // update fans
-        const fansQ = query(collection(db, 'fans'), where('model', '==', oldName));
-        const fansSnap = await getDocs(fansQ);
-        fansSnap.forEach(d => updateDoc(d.ref, { model: newName }));
 
         // update dayOffs
         const dayOffsQ = query(collection(db, 'dayOffs'), where('model', '==', oldName));
@@ -154,7 +150,7 @@ export function AdminPanel() {
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-4 mb-8 border-b border-neutral-800 pb-4">
           <button 
-            onClick={() => setAppView('crm')}
+            onClick={() => setAppView('schedule')}
             className="p-2 hover:bg-neutral-800 rounded-full text-neutral-400 hover:text-white transition-colors"
           >
             <ArrowLeft size={20} />

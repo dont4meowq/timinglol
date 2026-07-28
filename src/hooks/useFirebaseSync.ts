@@ -8,7 +8,6 @@ export function useFirebaseSync() {
   const { 
     currentUser, 
     setCurrentUser, 
-    setFans,
     setDayOffs,
     setModels,
     setAllUsers,
@@ -57,17 +56,6 @@ export function useFirebaseSync() {
     unsubs.push(
       onSnapshot(collection(db, 'users'), (snap) => {
         setAllUsers(snap.docs.map(d => d.data() as User));
-      })
-    );
-
-    // Fans: Admins see all, Chatters see only their assigned model
-    const fansQuery = currentUser.role === 'admin' 
-      ? collection(db, 'fans')
-      : query(collection(db, 'fans'), where('model', '==', currentUser.assignedModel));
-      
-    unsubs.push(
-      onSnapshot(fansQuery, (snap) => {
-        setFans(snap.docs.map(d => ({ id: d.id, ...d.data() } as any)));
       })
     );
 
@@ -124,7 +112,7 @@ export function useFirebaseSync() {
     );
 
     return () => unsubs.forEach(u => u());
-  }, [currentUser, setFans, setDayOffs, setAllUsers, setModels, setBonuses, setGuides]);
+  }, [currentUser, setDayOffs, setAllUsers, setModels, setBonuses, setGuides]);
 
   return { loading };
 }
