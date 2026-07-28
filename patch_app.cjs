@@ -1,57 +1,74 @@
 const fs = require('fs');
+const content = `import React, { useEffect } from 'react';
+import { Sidebar } from './components/Sidebar';
+import { Login } from './components/Login';
+import { AdminPanel } from './components/AdminPanel';
+import { CrmPanel } from './components/CrmPanel';
+import { SchedulePanel } from './components/SchedulePanel';
+import { BonusesPanel } from './components/BonusesPanel';
+import { RoulettePanel } from './components/RoulettePanel';
+import { GuidesPanel } from './components/GuidesPanel';
+import { ContestsPanel } from './components/ContestsPanel';
+import { CustomsPanel } from './components/CustomsPanel';
+import { useStore } from './store';
+import { useFirebaseSync } from './hooks/useFirebaseSync';
+import { Menu } from 'lucide-react';
 
-let app = fs.readFileSync('src/App.tsx', 'utf8');
-
-if (!app.includes('ContestsPanel')) {
-  app = app.replace(
-    /import \{ GuidesPanel \} from '\.\/components\/GuidesPanel';/,
-    "import { GuidesPanel } from './components/GuidesPanel';\nimport { ContestsPanel } from './components/ContestsPanel';"
-  );
+export default function App() {
+  const { loading } = useFirebaseSync();
+  const { sidebarOpen, setSidebarOpen, currentUser, appView } = useStore();
   
-  app = app.replace(
-    /\} else if \(appView === 'guides'\) \{/,
-    "} else if (appView === 'guides') {\n        return <GuidesPanel />;\n      } else if (appView === 'contests') {\n        return <ContestsPanel />;"
-  );
-  
-  app = app.replace(
-    /appView === 'guides' \? \(\s*<GuidesPanel \/>\s*\) : appView === 'customs' \? \(\s*<CustomsPanel \/>\s*\)/,
-    "appView === 'guides' ? (\n        <GuidesPanel />\n      ) : appView === 'contests' ? (\n        <ContestsPanel />\n      ) : appView === 'customs' ? (\n        <CustomsPanel />\n      )"
-  );
+  if (loading) {
+    return <div className="min-h-screen bg-[#1e1e1e] flex items-center justify-center p-4 text-white">Загрузка...</div>;
+  }
 
-  fs.writeFileSync('src/App.tsx', app);
+  if (!currentUser) {
+    return <Login />;
+  }
+
+  return (
+    <div className="flex h-screen w-full bg-[#1e1e1e] text-neutral-300 font-sans overflow-hidden">
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden" 
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar Container */}
+      <div className={\`flex flex-col fixed inset-y-0 left-0 z-50 transform \${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 transition-transform duration-200 ease-in-out\`}>
+        <Sidebar />
+      </div>
+
+      <div className="flex-1 flex flex-col min-w-0 w-full bg-[#1e1e1e]">
+        {/* Mobile Header */}
+        <div className="md:hidden flex items-center p-4 border-b border-neutral-800 bg-[#1e1e1e]">
+          <button onClick={() => setSidebarOpen(true)} className="p-2 -ml-2 text-neutral-400">
+            <Menu size={24} />
+          </button>
+        </div>
+
+        {appView === 'admin' ? (
+          <AdminPanel />
+        ) : appView === 'schedule' ? (
+          <SchedulePanel />
+        ) : appView === 'bonuses' ? (
+          <BonusesPanel />
+        ) : appView === 'roulette' ? (
+          <RoulettePanel />
+        ) : appView === 'guides' ? (
+          <GuidesPanel />
+        ) : appView === 'contests' ? (
+          <ContestsPanel />
+        ) : appView === 'customs' ? (
+          <CustomsPanel />
+        ) : (
+          <CrmPanel />
+        )}
+      </div>
+    </div>
+  );
 }
-
-let sidebar = fs.readFileSync('src/components/Sidebar.tsx', 'utf8');
-if (!sidebar.includes('contests')) {
-  sidebar = sidebar.replace(
-    /import \{ .* Trophy/g,
-    "import { Users, BookOpen, Settings, LayoutDashboard, UserCheck, CalendarDays, Gift, Dices, Trophy, Flag" // Flag for contests
-  );
-  
-  // Find Guides item and insert Contests item after it
-  const guideItem = `
-        <button 
-          onClick={() => { setAppView('guides'); setSidebarOpen(false); }}
-          className={\`w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors \${appView === 'guides' ? 'bg-blue-600/20 text-blue-400' : 'hover:bg-[#2a2d2e]'}\`}
-        >
-          <BookOpen size={20} />
-          <span>Гайды</span>
-        </button>`;
-        
-  const contestItem = `
-        <button 
-          onClick={() => { setAppView('contests'); setSidebarOpen(false); }}
-          className={\`w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors \${appView === 'contests' ? 'bg-orange-600/20 text-orange-400' : 'hover:bg-[#2a2d2e]'}\`}
-        >
-          <Trophy size={20} />
-          <span>Конкурсы</span>
-        </button>`;
-
-  sidebar = sidebar.replace(
-    /<button \s*onClick=\{\(\) => \{ setAppView\('guides'\); setSidebarOpen\(false\); \}\}\s*className=\{`w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors \$\{appView === 'guides' \? 'bg-blue-600\/20 text-blue-400' : 'hover:bg-\[#2a2d2e\]'\}`\}\s*>\s*<BookOpen size=\{20\} \/>\s*<span>Гайды<\/span>\s*<\/button>/,
-    match => match + contestItem
-  );
-  
-  fs.writeFileSync('src/components/Sidebar.tsx', sidebar);
-}
-
+`;
+fs.writeFileSync('src/App.tsx', content);

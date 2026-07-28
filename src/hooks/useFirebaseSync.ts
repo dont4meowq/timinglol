@@ -10,8 +10,7 @@ export function useFirebaseSync() {
     setCurrentUser, 
     setFans,
     setDayOffs,
-    setModels, 
-    setSections,
+    setModels,
     setAllUsers,
     setBonuses,
     setGuides,
@@ -79,17 +78,7 @@ export function useFirebaseSync() {
       })
     );
 
-    // Sections: Everyone sees all
-    const sectionsQuery = collection(db, 'sections');
-
-    unsubs.push(
-      onSnapshot(sectionsQuery, (snap) => {
-        // Sort sections by order
-        const sections = snap.docs.map(d => ({ id: d.id, ...d.data() } as any));
-        sections.sort((a, b) => (a.order || 0) - (b.order || 0));
-        setSections(sections);
-      })
-    );
+    
 
     
     // Bonuses
@@ -135,7 +124,7 @@ export function useFirebaseSync() {
     );
 
     return () => unsubs.forEach(u => u());
-  }, [currentUser, setFans, setDayOffs, setSections, setAllUsers, setModels, setBonuses, setGuides]);
+  }, [currentUser, setFans, setDayOffs, setAllUsers, setModels, setBonuses, setGuides]);
 
   return { loading };
 }

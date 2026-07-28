@@ -1,8 +1,10 @@
 const fs = require('fs');
-let code = fs.readFileSync('src/types.ts', 'utf8');
+let content = fs.readFileSync('src/types.ts', 'utf8');
 
-if (!code.includes('ModelInfo')) {
-  code += `\nexport interface ModelInfo {\n  id: string;\n  name: string;\n}\n`;
-}
+const regex1 = /export interface Note \{[\s\S]*?pinned: boolean;\n\}/g;
+const regex2 = /export interface Section \{[\s\S]*?order\?: number;\n\}/g;
 
-fs.writeFileSync('src/types.ts', code);
+content = content.replace(regex1, '');
+content = content.replace(regex2, '');
+
+fs.writeFileSync('src/types.ts', content);

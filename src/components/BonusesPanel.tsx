@@ -41,7 +41,7 @@ export function BonusesPanel() {
     <div className="flex-1 flex flex-col bg-[#1e1e1e] overflow-hidden">
       <div className="h-14 flex items-center px-4 border-b border-neutral-800 shrink-0 gap-4">
         <button 
-          onClick={() => setAppView('dashboard')}
+          onClick={() => setAppView('crm')}
           className="p-2 hover:bg-neutral-800 rounded-full text-neutral-400 hover:text-white transition-colors"
         >
           <ArrowLeft size={20} />

@@ -1,4 +1,6 @@
-import { create } from 'zustand';
+const fs = require('fs');
+
+const content = `import { create } from 'zustand';
 import { User, Fan, DayOff, ModelInfo, Bonus, Guide, Custom , Contest, Roulette} from './types';
 import { arrayMove } from '@dnd-kit/sortable';
 import { auth, db } from './firebase';
@@ -97,41 +99,41 @@ export const useStore = create<AppState>((set, get) => ({
   addRoulette: (roulette) => {
     const id = generateId();
     const obj = { ...roulette, id };
-    setDoc(doc(db, `roulettes/${id}`), obj).catch(console.error);
+    setDoc(doc(db, \`roulettes/\${id}\`), obj).catch(console.error);
     set((state) => ({ roulettes: [...state.roulettes, obj] }));
   },
   updateRoulette: (id, updates) => {
-    updateDoc(doc(db, `roulettes/${id}`), updates).catch(console.error);
+    updateDoc(doc(db, \`roulettes/\${id}\`), updates).catch(console.error);
     set((state) => ({ roulettes: state.roulettes.map(r => r.id === id ? { ...r, ...updates } : r) }));
   },
   deleteRoulette: (id) => {
-    deleteDoc(doc(db, `roulettes/${id}`)).catch(console.error);
+    deleteDoc(doc(db, \`roulettes/\${id}\`)).catch(console.error);
     set((state) => ({ roulettes: state.roulettes.filter(r => r.id !== id) }));
   },
 
   addBonus: (bonus) => {
     const id = generateId();
     const obj = { ...bonus, id };
-    setDoc(doc(db, `bonuses/${id}`), obj).catch(console.error);
+    setDoc(doc(db, \`bonuses/\${id}\`), obj).catch(console.error);
     set((state) => ({ bonuses: [...state.bonuses, obj] }));
   },
   deleteBonus: (id) => {
-    deleteDoc(doc(db, `bonuses/${id}`)).catch(console.error);
+    deleteDoc(doc(db, \`bonuses/\${id}\`)).catch(console.error);
     set((state) => ({ bonuses: state.bonuses.filter(b => b.id !== id) }));
   },
 
   addGuide: (guide) => {
     const id = generateId();
     const obj = { ...guide, id, createdAt: Date.now(), likes: [] };
-    setDoc(doc(db, `guides/${id}`), obj).catch(console.error);
+    setDoc(doc(db, \`guides/\${id}\`), obj).catch(console.error);
     set((state) => ({ guides: [obj, ...state.guides] }));
   },
   updateGuide: (id, updates) => {
-    updateDoc(doc(db, `guides/${id}`), updates).catch(console.error);
+    updateDoc(doc(db, \`guides/\${id}\`), updates).catch(console.error);
     set((state) => ({ guides: state.guides.map(g => g.id === id ? { ...g, ...updates } : g) }));
   },
   deleteGuide: (id) => {
-    deleteDoc(doc(db, `guides/${id}`)).catch(console.error);
+    deleteDoc(doc(db, \`guides/\${id}\`)).catch(console.error);
     set((state) => ({ guides: state.guides.filter(g => g.id !== id) }));
   },
   toggleGuideLike: (id, userId) => {
@@ -139,22 +141,22 @@ export const useStore = create<AppState>((set, get) => ({
     if (!guide) return;
     const isLiked = guide.likes.includes(userId);
     const newLikes = isLiked ? guide.likes.filter(u => u !== userId) : [...guide.likes, userId];
-    updateDoc(doc(db, `guides/${id}`), { likes: newLikes }).catch(console.error);
+    updateDoc(doc(db, \`guides/\${id}\`), { likes: newLikes }).catch(console.error);
     set((state) => ({ guides: state.guides.map(g => g.id === id ? { ...g, likes: newLikes } : g) }));
   },
 
   addContest: (contest) => {
     const id = generateId();
     const obj = { ...contest, id, createdAt: Date.now(), likes: [] };
-    setDoc(doc(db, `contests/${id}`), obj).catch(console.error);
+    setDoc(doc(db, \`contests/\${id}\`), obj).catch(console.error);
     set((state) => ({ contests: [obj, ...state.contests] }));
   },
   updateContest: (id, updates) => {
-    updateDoc(doc(db, `contests/${id}`), updates).catch(console.error);
+    updateDoc(doc(db, \`contests/\${id}\`), updates).catch(console.error);
     set((state) => ({ contests: state.contests.map(c => c.id === id ? { ...c, ...updates } : c) }));
   },
   deleteContest: (id) => {
-    deleteDoc(doc(db, `contests/${id}`)).catch(console.error);
+    deleteDoc(doc(db, \`contests/\${id}\`)).catch(console.error);
     set((state) => ({ contests: state.contests.filter(c => c.id !== id) }));
   },
   toggleContestLike: (id, userId) => {
@@ -162,51 +164,53 @@ export const useStore = create<AppState>((set, get) => ({
     if (!contest) return;
     const isLiked = contest.likes.includes(userId);
     const newLikes = isLiked ? contest.likes.filter(u => u !== userId) : [...contest.likes, userId];
-    updateDoc(doc(db, `contests/${id}`), { likes: newLikes }).catch(console.error);
+    updateDoc(doc(db, \`contests/\${id}\`), { likes: newLikes }).catch(console.error);
     set((state) => ({ contests: state.contests.map(c => c.id === id ? { ...c, likes: newLikes } : c) }));
   },
 
   addFan: (fan) => {
     const id = generateId();
     const obj = { ...fan, id };
-    setDoc(doc(db, `fans/${id}`), obj).catch(console.error);
+    setDoc(doc(db, \`fans/\${id}\`), obj).catch(console.error);
     set((state) => ({ fans: [...state.fans, obj] }));
   },
   updateFan: (id, updates) => {
-    updateDoc(doc(db, `fans/${id}`), updates).catch(console.error);
+    updateDoc(doc(db, \`fans/\${id}\`), updates).catch(console.error);
     set((state) => ({ fans: state.fans.map(f => f.id === id ? { ...f, ...updates } : f) }));
   },
   deleteFan: (id) => {
-    deleteDoc(doc(db, `fans/${id}`)).catch(console.error);
+    deleteDoc(doc(db, \`fans/\${id}\`)).catch(console.error);
     set((state) => ({ fans: state.fans.filter(f => f.id !== id) }));
   },
 
   addCustom: (custom) => {
     const id = generateId();
     const obj = { ...custom, id, createdAt: Date.now() };
-    setDoc(doc(db, `customs/${id}`), obj).catch(console.error);
+    setDoc(doc(db, \`customs/\${id}\`), obj).catch(console.error);
     set((state) => ({ customs: [...state.customs, obj] }));
   },
   updateCustom: (id, updates) => {
-    updateDoc(doc(db, `customs/${id}`), updates).catch(console.error);
+    updateDoc(doc(db, \`customs/\${id}\`), updates).catch(console.error);
     set((state) => ({ customs: state.customs.map(c => c.id === id ? { ...c, ...updates } : c) }));
   },
   deleteCustom: (id) => {
-    deleteDoc(doc(db, `customs/${id}`)).catch(console.error);
+    deleteDoc(doc(db, \`customs/\${id}\`)).catch(console.error);
     set((state) => ({ customs: state.customs.filter(c => c.id !== id) }));
   },
   
   addDayOff: (dayOff) => {
     const id = generateId();
     const obj = { ...dayOff, id };
-    setDoc(doc(db, `dayOffs/${id}`), obj).catch(console.error);
+    setDoc(doc(db, \`dayOffs/\${id}\`), obj).catch(console.error);
     set((state) => ({ dayOffs: [...state.dayOffs, obj] }));
   },
   
   deleteDayOff: (id) => {
-    deleteDoc(doc(db, `dayOffs/${id}`)).catch(console.error);
+    deleteDoc(doc(db, \`dayOffs/\${id}\`)).catch(console.error);
     set((state) => ({ dayOffs: state.dayOffs.filter(d => d.id !== id) }));
   },
 
   setSidebarOpen: (open) => set({ sidebarOpen: open }),
 }));
+`;
+fs.writeFileSync('src/store.ts', content);

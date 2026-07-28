@@ -1,18 +1,6 @@
-export interface Note {
-  id: string;
-  title: string;
-  content: string;
-  pinned: boolean;
-}
 
-export interface Section {
-  id: string;
-  title: string;
-  notes: Note[];
-  collapsed: boolean;
-  model: string; // 'Shared' or specific model like 'Aska'
-  order?: number;
-}
+
+
 
 export interface User {
   id: string;
