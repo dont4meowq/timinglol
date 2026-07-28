@@ -77,6 +77,26 @@ export function CrmPanel() {
     low: 'Мало / Халявщик'
   };
 
+  if (!activeModel) {
+    return (
+      <div className="flex-1 flex flex-col bg-[#1e1e1e] items-center justify-center p-6 text-center">
+        <div className="w-16 h-16 bg-neutral-800 rounded-full flex items-center justify-center text-neutral-500 mb-4">
+          <User size={32} />
+        </div>
+        <h2 className="text-xl font-semibold text-white mb-2">Модель не выбрана</h2>
+        <p className="text-neutral-400 max-w-sm mb-6">
+          Выберите модель в боковом меню слева, чтобы просмотреть и управлять ее фанатами.
+        </p>
+        <button 
+          onClick={() => setSidebarOpen(true)}
+          className="md:hidden px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-md transition-colors"
+        >
+          Открыть меню
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 flex flex-col bg-[#1e1e1e] overflow-hidden">
       <div className="h-14 flex items-center justify-between px-4 border-b border-neutral-800 shrink-0">
