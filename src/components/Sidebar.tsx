@@ -45,7 +45,7 @@ export function Sidebar() {
           className={`w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${appView === 'guides' ? 'bg-blue-600/20 text-blue-400' : 'hover:bg-[#2a2d2e]'}`}
         >
           <BookOpen size={18} />
-          <span className="font-medium">Гайды и Инструкции</span>
+          <span className="font-medium">Гайды</span>
         </button>
         <button 
           onClick={() => { setAppView('contests'); setSidebarOpen(false); }}
@@ -59,7 +59,7 @@ export function Sidebar() {
           className={`w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${appView === 'customs' ? 'bg-emerald-600/20 text-emerald-400' : 'hover:bg-[#2a2d2e]'}`}
         >
           <Camera size={18} />
-          <span className="font-medium">Заказ кастомов</span>
+          <span className="font-medium">Кастомы</span>
         </button>
       </div>
 
