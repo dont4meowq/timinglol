@@ -190,7 +190,7 @@ export function SchedulePanel() {
   };
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-[#1e1e1e]">
+    <div className="flex-1 flex flex-col min-w-0 min-h-0 bg-[#1e1e1e]">
       {/* Header */}
       <div className="p-4 border-b border-dotted border-neutral-600 flex items-center justify-between shrink-0 bg-[#252526]">
         <div className="flex items-center gap-4">
@@ -217,8 +217,8 @@ export function SchedulePanel() {
       </div>
 
       {/* Table */}
-      <div className="flex-1 overflow-auto custom-scrollbar p-4">
-        <div className="min-w-[800px] border border-neutral-700 rounded-lg overflow-hidden flex flex-col">
+      <div className="flex-1 min-h-0 overflow-auto custom-scrollbar p-4">
+        <div className="min-w-[1200px] border border-neutral-700 rounded-lg overflow-hidden flex flex-col">
           {/* Table Header */}
           <div className="flex bg-[#252526] border-b border-neutral-600 shrink-0">
             <div className="w-24 shrink-0 p-3 text-center border-r border-neutral-600 font-semibold text-neutral-400">

@@ -67,6 +67,7 @@ export function RoulettePanel() {
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [winner, setWinner] = useState<string | null>(null);
+  const [podkrutkaIndex, setPodkrutkaIndex] = useState<number | -1>(-1);
 
   const activeRoulette = availableRoulettes.find(r => r.id === activeRouletteId) || availableRoulettes[0];
   
@@ -79,12 +80,17 @@ export function RoulettePanel() {
   
   const prizes = activeRoulette.prizes;
 
+  const isAdminWheel = activeRoulette.id === 'money' || (activeRoulette as any).isAdminOnly;
+  const canSeePodkrutka = !isAdminWheel || currentUser?.role === 'admin';
+
   const spinWheel = () => {
     if (isSpinning) return;
     setIsSpinning(true);
     setWinner(null);
 
-    const prizeIndex = Math.floor(Math.random() * prizes.length);
+    const prizeIndex = podkrutkaIndex !== -1 ? podkrutkaIndex : Math.floor(Math.random() * prizes.length);
+    setPodkrutkaIndex(-1);
+    
     const sliceAngle = 360 / prizes.length;
     
     const targetBase = 360 * 5; 
@@ -255,16 +261,34 @@ export function RoulettePanel() {
           </div>
         </div>
 
+        {canSeePodkrutka && (
+          <div className="mt-8 relative z-10 w-full max-w-xs mx-auto">
+            <select
+              className="w-full bg-[#252526] border border-neutral-700 text-neutral-400 text-sm rounded-lg px-3 py-2 outline-none focus:border-pink-500 transition-colors"
+              value={podkrutkaIndex}
+              onChange={(e) => setPodkrutkaIndex(Number(e.target.value))}
+              disabled={isSpinning}
+            >
+              <option value={-1}>Случайный выбор (Честно)</option>
+              {prizes.map((prize, i) => (
+                <option key={i} value={i}>
+                  Выпадет: {prize}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <button
           onClick={spinWheel}
           disabled={isSpinning}
-          className="mt-12 relative group"
+          className="mt-6 relative group"
         >
           <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 to-purple-600 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
           <div className="relative bg-[#1e1e1e] border border-neutral-700 text-white text-2xl font-black px-16 py-5 rounded-full transition-all group-hover:scale-105 disabled:group-hover:scale-100 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest flex items-center gap-3">
             <activeRoulette.icon size={28} className={isSpinning ? "animate-spin text-pink-400" : "text-pink-400"} />
             <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent drop-shadow-sm">
-              {isSpinning ? 'Крутится...' : 'КРУТИТЬ!'}
+              {isSpinning ? 'SPINNING...' : 'SPIN!'}
             </span>
           </div>
         </button>
