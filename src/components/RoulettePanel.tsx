@@ -261,24 +261,6 @@ export function RoulettePanel() {
           </div>
         </div>
 
-        {canSeePodkrutka && (
-          <div className="mt-8 relative z-10 w-full max-w-xs mx-auto">
-            <select
-              className="w-full bg-[#252526] border border-neutral-700 text-neutral-400 text-sm rounded-lg px-3 py-2 outline-none focus:border-pink-500 transition-colors"
-              value={podkrutkaIndex}
-              onChange={(e) => setPodkrutkaIndex(Number(e.target.value))}
-              disabled={isSpinning}
-            >
-              <option value={-1}>Случайный выбор (Честно)</option>
-              {prizes.map((prize, i) => (
-                <option key={i} value={i}>
-                  Выпадет: {prize}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
         <button
           onClick={spinWheel}
           disabled={isSpinning}
@@ -299,6 +281,24 @@ export function RoulettePanel() {
             {winner || '\u00A0'}
           </div>
         </div>
+
+        {canSeePodkrutka && (
+          <div className="mt-8 relative z-10 w-full max-w-xs mx-auto">
+            <select
+              className="w-full bg-[#252526] border border-neutral-700 text-neutral-400 text-sm rounded-lg px-3 py-2 outline-none focus:border-pink-500 transition-colors"
+              value={podkrutkaIndex}
+              onChange={(e) => setPodkrutkaIndex(Number(e.target.value))}
+              disabled={isSpinning}
+            >
+              <option value={-1}>Случайный выбор (Честно)</option>
+              {prizes.map((prize, i) => (
+                <option key={i} value={i}>
+                  Выпадет: {prize}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       
       {isManageOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
