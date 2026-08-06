@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { User, DayOff, ModelInfo, Bonus, Guide, Custom , Contest, Roulette} from './types';
+import { User, DayOff, ModelInfo, Bonus, Guide, GuideFolder, Custom , Contest, Roulette} from './types';
 import { arrayMove } from '@dnd-kit/sortable';
 import { auth, db } from './firebase';
 import { doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
@@ -16,6 +16,7 @@ interface AppState {
   models: ModelInfo[];
   dayOffs: DayOff[];
   bonuses: Bonus[];
+  guideFolders: GuideFolder[];
   guides: Guide[];
   contests: Contest[];
   roulettes: Roulette[];
@@ -32,6 +33,10 @@ interface AppState {
   setModels: (models: ModelInfo[]) => void;
   setDayOffs: (dayOffs: DayOff[]) => void;
   setBonuses: (bonuses: Bonus[]) => void;
+  setGuideFolders: (folders: GuideFolder[]) => void;
+  addGuideFolder: (folder: Omit<GuideFolder, 'id'>) => void;
+  updateGuideFolder: (id: string, updates: Partial<GuideFolder>) => void;
+  deleteGuideFolder: (id: string) => void;
   setGuides: (guides: Guide[]) => void;
   setContests: (contests: Contest[]) => void;
   setRoulettes: (roulettes: Roulette[]) => void;
@@ -70,6 +75,7 @@ export const useStore = create<AppState>((set, get) => ({
   models: [],
   dayOffs: [],
   bonuses: [],
+  guideFolders: [],
   guides: [],
   contests: [],
   roulettes: [],
@@ -83,6 +89,21 @@ export const useStore = create<AppState>((set, get) => ({
   setModels: (models) => set({ models }),
   setDayOffs: (dayOffs) => set({ dayOffs }),
   setBonuses: (bonuses) => set({ bonuses }),
+  setGuideFolders: (folders) => set({ guideFolders: folders }),
+  addGuideFolder: (folder) => {
+    const id = generateId();
+    const obj = { ...folder, id };
+    setDoc(doc(db, `guideFolders/${id}`), obj).catch(console.error);
+    set((state) => ({ guideFolders: [...state.guideFolders, obj] }));
+  },
+  updateGuideFolder: (id, updates) => {
+    updateDoc(doc(db, `guideFolders/${id}`), updates).catch(console.error);
+    set((state) => ({ guideFolders: state.guideFolders.map(f => f.id === id ? { ...f, ...updates } : f) }));
+  },
+  deleteGuideFolder: (id) => {
+    deleteDoc(doc(db, `guideFolders/${id}`)).catch(console.error);
+    set((state) => ({ guideFolders: state.guideFolders.filter(f => f.id !== id) }));
+  },
   setGuides: (guides) => set({ guides }),
   setContests: (contests) => set({ contests }),
   setRoulettes: (roulettes) => set({ roulettes }),

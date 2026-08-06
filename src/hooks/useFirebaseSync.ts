@@ -12,6 +12,7 @@ export function useFirebaseSync() {
     setModels,
     setAllUsers,
     setBonuses,
+    setGuideFolders,
     setGuides,
     setCustoms
   } = useStore();
@@ -78,6 +79,11 @@ export function useFirebaseSync() {
 
     // Guides
     unsubs.push(
+      onSnapshot(collection(db, 'guideFolders'), (snap) => {
+        setGuideFolders(snap.docs.map(d => ({ id: d.id, ...d.data() } as any)));
+      })
+    );
+    unsubs.push(
       onSnapshot(collection(db, 'guides'), (snap) => {
         setGuides(snap.docs.map(d => ({ id: d.id, ...d.data() } as any)).sort((a, b) => b.createdAt - a.createdAt));
       })
@@ -112,7 +118,7 @@ export function useFirebaseSync() {
     );
 
     return () => unsubs.forEach(u => u());
-  }, [currentUser, setDayOffs, setAllUsers, setModels, setBonuses, setGuides]);
+  }, [currentUser, setDayOffs, setAllUsers, setModels, setBonuses, setGuides, setGuideFolders]);
 
   return { loading };
 }

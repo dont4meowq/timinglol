@@ -36,6 +36,12 @@ export interface ModelInfo {
   name: string;
 }
 
+export interface GuideFolder {
+  id: string;
+  name: string;
+  subFolders: { id: string; name: string }[];
+}
+
 export interface Guide {
   id: string;
   title: string;
@@ -44,6 +50,8 @@ export interface Guide {
   authorName: string;
   createdAt: number;
   likes: string[];
+  blockId?: string | null;
+  subBlockId?: string | null;
 }
 
 export interface GuideComment {
