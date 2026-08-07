@@ -70,7 +70,7 @@ function ContestPost({ contest, isAdmin, onEdit }: { key?: string, contest: any,
         </div>
 
         <div 
-          className="text-neutral-300 leading-relaxed text-base prose-invert max-w-none contest-content"
+          className="text-neutral-300 leading-relaxed text-base prose-invert max-w-none contest-content break-words"
           dangerouslySetInnerHTML={{ __html: formatContent(contest.content) }}
           onClick={(e) => {
             const target = e.target as HTMLElement;
@@ -243,7 +243,7 @@ function CommentsSection({ contestId }: { contestId: string }) {
                       </div>
                     </div>
                   ) : (
-                    <div className="text-neutral-300 text-sm whitespace-pre-wrap mb-2">
+                    <div className="text-neutral-300 text-sm whitespace-pre-wrap mb-2 break-words">
                       {c.content}
                     </div>
                   )}

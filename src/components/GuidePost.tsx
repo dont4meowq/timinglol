@@ -70,7 +70,7 @@ function GuidePost({ guide, isAdmin, onEdit }: { key?: string, guide: any, isAdm
         </div>
 
         <div 
-          className="text-neutral-300 leading-relaxed text-base prose-invert max-w-none guide-content"
+          className="text-neutral-300 leading-relaxed text-base prose-invert max-w-none guide-content break-words"
           dangerouslySetInnerHTML={{ __html: formatContent(guide.content) }}
           onClick={(e) => {
             const target = e.target as HTMLElement;
@@ -243,7 +243,7 @@ function CommentsSection({ guideId }: { guideId: string }) {
                       </div>
                     </div>
                   ) : (
-                    <div className="text-neutral-300 text-sm whitespace-pre-wrap mb-2">
+                    <div className="text-neutral-300 text-sm whitespace-pre-wrap mb-2 break-words">
                       {c.content}
                     </div>
                   )}
