@@ -1,45 +1,38 @@
 const fs = require('fs');
 
-// Patch AdminPanel
-let admin = fs.readFileSync('src/components/AdminPanel.tsx', 'utf8');
+let code = fs.readFileSync('src/components/AdminPanel.tsx', 'utf8');
 
-const sectionsUpdateRegex = /\s*\/\/ update sections\s*const sectionsQ = query\(collection\(db, 'sections'\), where\('model', '==', oldName\)\);\s*const sectionsSnap = await getDocs\(sectionsQ\);\s*sectionsSnap\.forEach\(d => updateDoc\(d\.ref, \{ model: newName \}\)\);/g;
-admin = admin.replace(sectionsUpdateRegex, '');
+// Patch new user creation
+code = code.replace(
+  `const newUserObj = {
+        id: uid,
+        email: newLogin, // save original login as email field for display
+        name: newName,
+        role,
+        ...(role === 'chatter' ? { assignedModel: assignedModel.trim() } : {})
+      };`,
+  `const newUserObj = {
+        id: uid,
+        email: newLogin,
+        name: newName,
+        role,
+        ...(role === 'chatter' ? { assignedModel: assignedModel.trim() } : {}),
+        teamId: currentUser?.teamId
+      };`
+);
 
-const sectionsDeleteRegex = /\s*\/\/ delete sections\s*const sectionsQ = query\(collection\(db, 'sections'\), where\('model', '==', m\.name\)\);\s*const sectionsSnap = await getDocs\(sectionsQ\);\s*sectionsSnap\.forEach\(d => deleteDoc\(d\.ref\)\);/g;
-admin = admin.replace(sectionsDeleteRegex, '');
+// Patch new model creation
+code = code.replace(
+  `await setDoc(doc(db, 'models', newModelName.trim()), {
+        id: newModelName.trim(),
+        name: newModelName.trim()
+      });`,
+  `await setDoc(doc(db, 'models', newModelName.trim()), {
+        id: newModelName.trim(),
+        name: newModelName.trim(),
+        teamId: currentUser?.teamId
+      });`
+);
 
-admin = admin.replace(/setAppView\('dashboard'\)/g, "setAppView('crm')");
-
-fs.writeFileSync('src/components/AdminPanel.tsx', admin);
-
-// Patch BonusesPanel
-let bonuses = fs.readFileSync('src/components/BonusesPanel.tsx', 'utf8');
-bonuses = bonuses.replace(/setAppView\('dashboard'\)/g, "setAppView('crm')");
-fs.writeFileSync('src/components/BonusesPanel.tsx', bonuses);
-
-// Patch RoulettePanel
-let roulette = fs.readFileSync('src/components/RoulettePanel.tsx', 'utf8');
-roulette = roulette.replace(/setAppView\('dashboard'\)/g, "setAppView('crm')");
-fs.writeFileSync('src/components/RoulettePanel.tsx', roulette);
-
-// Patch SchedulePanel (just in case)
-let schedule = fs.readFileSync('src/components/SchedulePanel.tsx', 'utf8');
-schedule = schedule.replace(/setAppView\('dashboard'\)/g, "setAppView('crm')");
-fs.writeFileSync('src/components/SchedulePanel.tsx', schedule);
-
-// Patch GuidesPanel
-let guides = fs.readFileSync('src/components/GuidesPanel.tsx', 'utf8');
-guides = guides.replace(/setAppView\('dashboard'\)/g, "setAppView('crm')");
-fs.writeFileSync('src/components/GuidesPanel.tsx', guides);
-
-// Patch ContestsPanel
-let contests = fs.readFileSync('src/components/ContestsPanel.tsx', 'utf8');
-contests = contests.replace(/setAppView\('dashboard'\)/g, "setAppView('crm')");
-fs.writeFileSync('src/components/ContestsPanel.tsx', contests);
-
-// Patch CustomsPanel
-let customs = fs.readFileSync('src/components/CustomsPanel.tsx', 'utf8');
-customs = customs.replace(/setAppView\('dashboard'\)/g, "setAppView('crm')");
-fs.writeFileSync('src/components/CustomsPanel.tsx', customs);
-
+fs.writeFileSync('src/components/AdminPanel.tsx', code);
+console.log('Patched AdminPanel');

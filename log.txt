@@ -1,0 +1,44 @@
+Starting...
+Signed in SA
+Migrating users...
+Done migration.
+Team team_destr0yl0nely
+destr0yl0nely@admin.com Firebase: Error (auth/email-already-in-use).
+eviljordanz@admin.com Firebase: Error (auth/email-already-in-use).
+gotmillions@chatter.com Firebase: Error (auth/email-already-in-use).
+oggold048@chatter.com Firebase: Error (auth/email-already-in-use).
+taylors_sswift@chatter.com Firebase: Error (auth/email-already-in-use).
+broodmother1312@chatter.com Firebase: Error (auth/email-already-in-use).
+mylovelyexistence@chatter.com Firebase: Error (auth/email-already-in-use).
+cocuncux@chatter.com Firebase: Error (auth/email-already-in-use).
+s1mpwl@chatter.com Firebase: Error (auth/email-already-in-use).
+overthehxlls@chatter.com Firebase: Error (auth/email-already-in-use).
+ranzebrff@chatter.com Firebase: Error (auth/email-already-in-use).
+djlopezzz@chatter.com Firebase: Error (auth/email-already-in-use).
+stiefmutter18@chatter.com Firebase: Error (auth/email-already-in-use).
+moggetsu@chatter.com Firebase: Error (auth/email-already-in-use).
+parus690@chatter.com Firebase: Error (auth/email-already-in-use).
+overthehxlls2@chatter.com Firebase: Error (auth/email-already-in-use).
+zxcvbnnmowi@chatter.com Firebase: Error (auth/email-already-in-use).
+Team team_uzzi62
+uzzi62@admin.com Firebase: Error (auth/email-already-in-use).
+godmodee666@admin.com Firebase: Error (auth/email-already-in-use).
+bbernik@chatter.com Firebase: Error (auth/email-already-in-use).
+psychocommerce@chatter.com Firebase: Error (auth/email-already-in-use).
+johannlieb@chatter.com Firebase: Error (auth/email-already-in-use).
+whoislunexq@chatter.com Firebase: Error (auth/email-already-in-use).
+qwezz2214@chatter.com Firebase: Error (auth/email-already-in-use).
+unicide1@chatter.com Firebase: Error (auth/email-already-in-use).
+hatemyseifpls@chatter.com Firebase: Error (auth/email-already-in-use).
+angelous225@chatter.com Firebase: Error (auth/email-already-in-use).
+skipzzzik@chatter.com Firebase: Error (auth/email-already-in-use).
+pigyyboyl@chatter.com Firebase: Error (auth/email-already-in-use).
+hoplopol@chatter.com Firebase: Error (auth/email-already-in-use).
+user5741@chatter.com Firebase: Error (auth/email-already-in-use).
+angelous225_2@chatter.com Firebase: Error (auth/email-already-in-use).
+ughdelyo@chatter.com Firebase: Error (auth/email-already-in-use).
+vanya3737@chatter.com Firebase: Error (auth/email-already-in-use).
+raymondbig@chatter.com Firebase: Error (auth/email-already-in-use).
+boss_9874@chatter.com Firebase: Error (auth/email-already-in-use).
+hoplopol2@chatter.com Firebase: Error (auth/email-already-in-use).
+SUCCESS

@@ -39,10 +39,11 @@ export function AdminPanel() {
       
       const newUserObj = {
         id: uid,
-        email: newLogin, // save original login as email field for display
+        email: newLogin,
         name: newName,
         role,
-        ...(role === 'chatter' ? { assignedModel: assignedModel.trim() } : {})
+        ...(role === 'chatter' ? { assignedModel: assignedModel.trim() } : {}),
+        teamId: currentUser?.teamId
       };
       
       await setDoc(doc(db, 'users', uid), newUserObj);

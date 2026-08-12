@@ -92,7 +92,7 @@ export const useStore = create<AppState>((set, get) => ({
   setGuideFolders: (folders) => set({ guideFolders: folders }),
   addGuideFolder: (folder) => {
     const id = generateId();
-    const obj = { ...folder, id };
+    const obj = { ...folder, id , teamId: get().currentUser?.teamId};
     setDoc(doc(db, `guideFolders/${id}`), obj).catch(console.error);
     set((state) => ({ guideFolders: [...state.guideFolders, obj] }));
   },
@@ -110,7 +110,7 @@ export const useStore = create<AppState>((set, get) => ({
 
   addRoulette: (roulette) => {
     const id = generateId();
-    const obj = { ...roulette, id };
+    const obj = { ...roulette, id , teamId: get().currentUser?.teamId};
     setDoc(doc(db, `roulettes/${id}`), obj).catch(console.error);
     set((state) => ({ roulettes: [...state.roulettes, obj] }));
   },
@@ -125,7 +125,7 @@ export const useStore = create<AppState>((set, get) => ({
 
   addBonus: (bonus) => {
     const id = generateId();
-    const obj = { ...bonus, id };
+    const obj = { ...bonus, id , teamId: get().currentUser?.teamId};
     setDoc(doc(db, `bonuses/${id}`), obj).catch(console.error);
     set((state) => ({ bonuses: [...state.bonuses, obj] }));
   },
@@ -136,7 +136,7 @@ export const useStore = create<AppState>((set, get) => ({
 
   addGuide: (guide) => {
     const id = generateId();
-    const obj = { ...guide, id, createdAt: Date.now(), likes: [] };
+    const obj = { ...guide, id, createdAt: Date.now(), likes: [] , teamId: get().currentUser?.teamId};
     setDoc(doc(db, `guides/${id}`), obj).catch(console.error);
     set((state) => ({ guides: [obj, ...state.guides] }));
   },
@@ -159,7 +159,7 @@ export const useStore = create<AppState>((set, get) => ({
 
   addContest: (contest) => {
     const id = generateId();
-    const obj = { ...contest, id, createdAt: Date.now(), likes: [] };
+    const obj = { ...contest, id, createdAt: Date.now(), likes: [] , teamId: get().currentUser?.teamId};
     setDoc(doc(db, `contests/${id}`), obj).catch(console.error);
     set((state) => ({ contests: [obj, ...state.contests] }));
   },
@@ -182,7 +182,7 @@ export const useStore = create<AppState>((set, get) => ({
 
   addCustom: (custom) => {
     const id = generateId();
-    const obj = { ...custom, id, createdAt: Date.now() };
+    const obj = { ...custom, id, createdAt: Date.now() , teamId: get().currentUser?.teamId};
     setDoc(doc(db, `customs/${id}`), obj).catch(console.error);
     set((state) => ({ customs: [...state.customs, obj] }));
   },
@@ -197,7 +197,7 @@ export const useStore = create<AppState>((set, get) => ({
   
   addDayOff: (dayOff) => {
     const id = generateId();
-    const obj = { ...dayOff, id };
+    const obj = { ...dayOff, id , teamId: get().currentUser?.teamId};
     setDoc(doc(db, `dayOffs/${id}`), obj).catch(console.error);
     set((state) => ({ dayOffs: [...state.dayOffs, obj] }));
   },

@@ -5,13 +5,15 @@
 export interface User {
   id: string;
   email: string;
-  role: 'admin' | 'chatter';
+  role: 'superadmin' | 'admin' | 'chatter';
+  teamId?: string;
   assignedModel?: string;
   name: string;
 }
 
 
 export interface Custom {
+  teamId?: string;
   id: string;
   model: string;
   customNumber: string;
@@ -24,6 +26,7 @@ export interface Custom {
 }
 
 export interface DayOff {
+  teamId?: string;
   id: string;
   date: string; // YYYY-MM-DD
   shift: 'night' | 'morning' | 'evening';
@@ -32,17 +35,20 @@ export interface DayOff {
 }
 
 export interface ModelInfo {
+  teamId?: string;
   id: string;
   name: string;
 }
 
 export interface GuideFolder {
+  teamId?: string;
   id: string;
   name: string;
   subFolders: { id: string; name: string }[];
 }
 
 export interface Guide {
+  teamId?: string;
   id: string;
   title: string;
   content: string;
@@ -55,6 +61,7 @@ export interface Guide {
 }
 
 export interface GuideComment {
+  teamId?: string;
   id: string;
   guideId: string;
   authorId: string;
@@ -64,6 +71,7 @@ export interface GuideComment {
 }
 
 export interface Bonus {
+  teamId?: string;
   id: string;
   userId: string; // The user (chatter) this bonus belongs to
   amount: number;
@@ -72,6 +80,7 @@ export interface Bonus {
 }
 
 export interface Contest {
+  teamId?: string;
   id: string;
   title: string;
   content: string; // Description and image links can be in markdown or just text/HTML? Wait, guides use markdown? Let's check GuidesPanel.
@@ -83,6 +92,7 @@ export interface Contest {
 }
 
 export interface ContestComment {
+  teamId?: string;
   id: string;
   contestId: string;
   authorId: string;
@@ -92,6 +102,7 @@ export interface ContestComment {
 }
 
 export interface Roulette {
+  teamId?: string;
   id: string;
   name: string;
   prizes: string[];

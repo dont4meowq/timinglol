@@ -52,58 +52,70 @@ export function useFirebaseSync() {
     if (!currentUser) return;
 
     const unsubs: any[] = [];
+    
+    // Helper to get query based on teamId
+    const getTeamQuery = (collectionName: string) => {
+      const coll = collection(db, collectionName);
+      if (currentUser.role === 'superadmin') return coll;
+      if (!currentUser.teamId) return query(coll, where('teamId', '==', 'UNASSIGNED')); // Fallback for safety
+      return query(coll, where('teamId', '==', currentUser.teamId));
+    };
 
     // Fetch users for everyone (chatters need it for bonuses)
     unsubs.push(
-      onSnapshot(collection(db, 'users'), (snap) => {
+      onSnapshot(getTeamQuery('users'), (snap) => {
         setAllUsers(snap.docs.map(d => d.data() as User));
       })
     );
 
-    // DayOffs: Everyone sees all
+    // DayOffs
     unsubs.push(
-      onSnapshot(collection(db, 'dayOffs'), (snap) => {
+      onSnapshot(getTeamQuery('dayOffs'), (snap) => {
         setDayOffs(snap.docs.map(d => ({ id: d.id, ...d.data() } as any)));
       })
     );
-
-    
-
-    
+        
     // Bonuses
     unsubs.push(
-      onSnapshot(collection(db, 'bonuses'), (snap) => {
+      onSnapshot(getTeamQuery('bonuses'), (snap) => {
         setBonuses(snap.docs.map(d => ({ id: d.id, ...d.data() } as any)));
       })
     );
 
     // Guides
     unsubs.push(
-      onSnapshot(collection(db, 'guideFolders'), (snap) => {
+      onSnapshot(getTeamQuery('guideFolders'), (snap) => {
         setGuideFolders(snap.docs.map(d => ({ id: d.id, ...d.data() } as any)));
       })
     );
     unsubs.push(
-      onSnapshot(collection(db, 'guides'), (snap) => {
+      onSnapshot(getTeamQuery('guides'), (snap) => {
         setGuides(snap.docs.map(d => ({ id: d.id, ...d.data() } as any)).sort((a, b) => b.createdAt - a.createdAt));
       })
     );
+
     unsubs.push(
-      onSnapshot(collection(db, 'contests'), (snap) => {
+      onSnapshot(getTeamQuery('contests'), (snap) => {
         useStore.getState().setContests(snap.docs.map(d => ({ id: d.id, ...d.data() } as any)).sort((a, b) => b.createdAt - a.createdAt));
       })
     );
+
     unsubs.push(
-      onSnapshot(collection(db, 'roulettes'), (snap) => {
+      onSnapshot(getTeamQuery('roulettes'), (snap) => {
         useStore.getState().setRoulettes(snap.docs.map(d => ({ id: d.id, ...d.data() } as any)));
       })
     );
 
     // Customs
-    const customsQuery = currentUser.role === 'admin' 
-      ? collection(db, 'customs')
-      : query(collection(db, 'customs'), where('model', '==', currentUser.assignedModel));
-      
+    let customsQuery = getTeamQuery('customs');
+    if (currentUser.role === 'chatter') {
+      if (currentUser.teamId) {
+        customsQuery = query(collection(db, 'customs'), where('teamId', '==', currentUser.teamId), where('model', '==', currentUser.assignedModel));
+      } else {
+        customsQuery = query(collection(db, 'customs'), where('model', '==', currentUser.assignedModel));
+      }
+    }
+    
     unsubs.push(
       onSnapshot(customsQuery, (snap) => {
         setCustoms(snap.docs.map(d => ({ id: d.id, ...d.data() } as any)).sort((a, b) => b.createdAt - a.createdAt));
@@ -112,7 +124,7 @@ export function useFirebaseSync() {
 
     // Models
     unsubs.push(
-      onSnapshot(collection(db, 'models'), (snap) => {
+      onSnapshot(getTeamQuery('models'), (snap) => {
         setModels(snap.docs.map(d => ({ id: d.id, ...d.data() } as any)));
       })
     );
