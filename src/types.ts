@@ -109,3 +109,12 @@ export interface Roulette {
   isAdminOnly: boolean;
   authorId: string;
 }
+
+export interface Paste {
+  teamId?: string;
+  id: string;
+  title: string;
+  content: string;
+  authorId: string;
+  createdAt: number;
+}

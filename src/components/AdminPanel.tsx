@@ -88,13 +88,13 @@ export function AdminPanel() {
         const oldName = oldModel.name;
 
         // update users
-        const usersQ = query(collection(db, 'users'), where('assignedModel', '==', oldName));
+        const usersQ = query(collection(db, 'users'), where('assignedModel', '==', oldName || 'UNASSIGNED'));
         const usersSnap = await getDocs(usersQ);
         usersSnap.forEach(d => updateDoc(d.ref, { assignedModel: newName }));
 
 
         // update dayOffs
-        const dayOffsQ = query(collection(db, 'dayOffs'), where('model', '==', oldName));
+        const dayOffsQ = query(collection(db, 'dayOffs'), where('model', '==', oldName || 'UNASSIGNED'));
         const dayOffsSnap = await getDocs(dayOffsQ);
         dayOffsSnap.forEach(d => updateDoc(d.ref, { model: newName }));
       }
@@ -120,7 +120,7 @@ export function AdminPanel() {
       await deleteDoc(doc(db, 'users', id));
       
       // Delete their day-offs
-      const q = query(collection(db, 'dayOffs'), where('operator', '==', name));
+      const q = query(collection(db, 'dayOffs'), where('operator', '==', name || 'UNASSIGNED'));
       const snap = await getDocs(q);
       const deletePromises = snap.docs.map(d => deleteDoc(d.ref).catch(console.error));
       await Promise.all(deletePromises);

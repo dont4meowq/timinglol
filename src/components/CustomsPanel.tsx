@@ -46,13 +46,15 @@ export function CustomsPanel() {
     }
   }, [formDefaultModel, isFormOpen]);
 
-  const filteredCustoms = customs.filter(c => {
-    if (selectedModelFilter !== 'all' && c.model !== selectedModelFilter) return false;
-    const s = search.toLowerCase();
-    return (c.fanLink || '').toLowerCase().includes(s) || 
-           (c.customNumber || '').toLowerCase().includes(s) ||
-           (c.statusComment || '').toLowerCase().includes(s);
-  }).sort((a, b) => b.createdAt - a.createdAt);
+  const filteredCustoms = React.useMemo(() => {
+    return customs.filter(c => {
+      if (selectedModelFilter !== 'all' && c.model !== selectedModelFilter) return false;
+      const s = search.toLowerCase();
+      return (c.fanLink || '').toLowerCase().includes(s) || 
+             (c.customNumber || '').toLowerCase().includes(s) ||
+             (c.statusComment || '').toLowerCase().includes(s);
+    }).sort((a, b) => b.createdAt - a.createdAt);
+  }, [customs, selectedModelFilter, search]);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();

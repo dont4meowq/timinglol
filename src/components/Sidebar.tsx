@@ -1,7 +1,7 @@
 import React from 'react';
 import { useStore } from '../store';
 import { logOut } from '../firebase';
-import { Calendar, Gift, Dices, BookOpen, Camera, Trophy, Shield, LogOut } from 'lucide-react';
+import { Calendar, Gift, Dices, BookOpen, Camera, Trophy, Shield, LogOut, ClipboardList } from 'lucide-react';
 
 export function Sidebar() {
   const { 
@@ -39,6 +39,14 @@ export function Sidebar() {
         >
           <BookOpen size={18} />
           <span className="font-medium">Гайды</span>
+        </button>
+        
+        <button 
+          onClick={() => { setAppView('pastes'); setSidebarOpen(false); }}
+          className={`w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${appView === 'pastes' ? 'bg-blue-600/20 text-blue-400' : 'hover:bg-[#2a2d2e]'}`}
+        >
+          <ClipboardList size={18} />
+          <span className="font-medium">Пасты</span>
         </button>
         <button 
           onClick={() => { setAppView('contests'); setSidebarOpen(false); }}

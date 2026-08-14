@@ -14,7 +14,8 @@ export function useFirebaseSync() {
     setBonuses,
     setGuideFolders,
     setGuides,
-    setCustoms
+    setCustoms,
+    setPastes
   } = useStore();
 
   const [loading, setLoading] = useState(true);
@@ -109,10 +110,11 @@ export function useFirebaseSync() {
     // Customs
     let customsQuery = getTeamQuery('customs');
     if (currentUser.role === 'chatter') {
+      const safeModel = currentUser.assignedModel || 'UNASSIGNED';
       if (currentUser.teamId) {
-        customsQuery = query(collection(db, 'customs'), where('teamId', '==', currentUser.teamId), where('model', '==', currentUser.assignedModel));
+        customsQuery = query(collection(db, 'customs'), where('teamId', '==', currentUser.teamId), where('model', '==', safeModel));
       } else {
-        customsQuery = query(collection(db, 'customs'), where('model', '==', currentUser.assignedModel));
+        customsQuery = query(collection(db, 'customs'), where('model', '==', safeModel));
       }
     }
     
@@ -129,7 +131,16 @@ export function useFirebaseSync() {
       })
     );
 
-    return () => unsubs.forEach(u => u());
+    
+      // Pastes
+      const pastesQ = getTeamQuery('pastes');
+      const unsubPastes = onSnapshot(pastesQ, (snap) => {
+        const p = snap.docs.map(d => ({ id: d.id, ...d.data() } as any));
+        setPastes(p);
+      });
+      unsubs.push(unsubPastes);
+
+      return () => unsubs.forEach(u => u());
   }, [currentUser, setDayOffs, setAllUsers, setModels, setBonuses, setGuides, setGuideFolders]);
 
   return { loading };

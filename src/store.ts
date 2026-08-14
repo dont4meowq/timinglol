@@ -1,7 +1,6 @@
 import { create } from 'zustand';
-import { User, DayOff, ModelInfo, Bonus, Guide, GuideFolder, Custom , Contest, Roulette} from './types';
-import { arrayMove } from '@dnd-kit/sortable';
-import { auth, db } from './firebase';
+import { User, DayOff, ModelInfo, Bonus, Guide, GuideFolder, Custom , Contest, Roulette, Paste} from './types';
+import { db } from './firebase';
 import { doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 
 const generateId = () => crypto.randomUUID();
@@ -11,7 +10,7 @@ interface AppState {
 
   allUsers: User[];
   currentUser: User | null;
-  appView: 'admin' | 'schedule' | 'bonuses' | 'roulette' | 'guides' | 'customs' | 'contests';
+  appView: 'admin' | 'schedule' | 'bonuses' | 'roulette' | 'guides' | 'customs' | 'contests' | 'pastes';
   customs: Custom[];
   models: ModelInfo[];
   dayOffs: DayOff[];
@@ -20,11 +19,12 @@ interface AppState {
   guides: Guide[];
   contests: Contest[];
   roulettes: Roulette[];
+  pastes: Paste[];
   
   activeModel: string;
 
   // Actions
-  setAppView: (view: 'admin' | 'schedule' | 'bonuses' | 'roulette' | 'guides' | 'customs' | 'contests') => void;
+  setAppView: (view: 'admin' | 'schedule' | 'bonuses' | 'roulette' | 'guides' | 'customs' | 'contests' | 'pastes') => void;
   setActiveModel: (model: string) => void;
   
   setCurrentUser: (user: User | null) => void;
@@ -40,6 +40,10 @@ interface AppState {
   setGuides: (guides: Guide[]) => void;
   setContests: (contests: Contest[]) => void;
   setRoulettes: (roulettes: Roulette[]) => void;
+  setPastes: (pastes: Paste[]) => void;
+  addPaste: (paste: Omit<Paste, 'id' | 'createdAt'>) => void;
+  deletePaste: (id: string) => void;
+  updatePaste: (id: string, updates: Partial<Paste>) => void;
   addRoulette: (roulette: Omit<Roulette, 'id'>) => void;
   deleteRoulette: (id: string) => void;
   updateRoulette: (id: string, updates: Partial<Roulette>) => void;
@@ -79,6 +83,7 @@ export const useStore = create<AppState>((set, get) => ({
   guides: [],
   contests: [],
   roulettes: [],
+  pastes: [],
   activeModel: '',
 
   setAppView: (view) => set({ appView: view }),
@@ -107,7 +112,23 @@ export const useStore = create<AppState>((set, get) => ({
   setGuides: (guides) => set({ guides }),
   setContests: (contests) => set({ contests }),
   setRoulettes: (roulettes) => set({ roulettes }),
-
+  setPastes: (pastes) => set({ pastes }),
+    addPaste: (paste) => {
+    const id = generateId();
+    const obj = { ...paste, id, createdAt: Date.now() , teamId: get().currentUser?.teamId};
+    setDoc(doc(db, `pastes/${id}`), obj).catch(console.error);
+    set((state) => ({ pastes: [...state.pastes, obj as Paste] }));
+  },
+  deletePaste: (id) => {
+    deleteDoc(doc(db, `pastes/${id}`)).catch(console.error);
+    set((state) => ({ pastes: state.pastes.filter(p => p.id !== id) }));
+  },
+  updatePaste: (id, updates) => {
+    updateDoc(doc(db, `pastes/${id}`), updates).catch(console.error);
+    set((state) => ({
+      pastes: state.pastes.map(p => p.id === id ? { ...p, ...updates } : p)
+    }));
+  },
   addRoulette: (roulette) => {
     const id = generateId();
     const obj = { ...roulette, id , teamId: get().currentUser?.teamId};

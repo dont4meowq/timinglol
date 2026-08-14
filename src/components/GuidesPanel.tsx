@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../store';
-import { Plus, Edit2, Trash2, Heart, MessageSquare, Send, X, Image as ImageIcon, Search, Folder, FolderOpen, ChevronRight, ChevronDown, MoreVertical } from 'lucide-react';
+import { Plus, Trash2, X, Image as ImageIcon, Search, Folder, FolderOpen, ChevronRight, ChevronDown } from 'lucide-react';
 import { GuidePost } from "./GuidePost";
-import { db } from '../firebase';
-import { collection, query, where, onSnapshot, orderBy, addDoc, serverTimestamp, deleteDoc, doc, updateDoc } from 'firebase/firestore';
-import { GuideFolder } from '../types';
 
 export function GuidesPanel() {
-  const { guides, guideFolders, currentUser, addGuide, updateGuide, deleteGuide, addGuideFolder, updateGuideFolder, deleteGuideFolder } = useStore();
+  const { guides, guideFolders, currentUser, addGuide, updateGuide, addGuideFolder, updateGuideFolder, deleteGuideFolder } = useStore();
   const isAdmin = currentUser?.role === 'admin';
 
   const [isEditing, setIsEditing] = useState(false);
@@ -32,13 +29,15 @@ export function GuidesPanel() {
   const [folderToDelete, setFolderToDelete] = useState<string | null>(null);
   const [subFolderToDelete, setSubFolderToDelete] = useState<{folderId: string, subFolderId: string} | null>(null);
 
-  const filteredGuides = guides.filter(guide => {
+  const filteredGuides = React.useMemo(() => {
     const q = searchQuery.toLowerCase();
-    const matchesSearch = guide.title.toLowerCase().includes(q) || guide.content.toLowerCase().includes(q);
-    const matchesFolder = activeFolderId ? guide.blockId === activeFolderId : true;
-    const matchesSubFolder = activeSubFolderId ? guide.subBlockId === activeSubFolderId : true;
-    return matchesSearch && matchesFolder && matchesSubFolder;
-  });
+    return guides.filter(guide => {
+      const matchesSearch = guide.title.toLowerCase().includes(q) || guide.content.toLowerCase().includes(q);
+      const matchesFolder = activeFolderId ? guide.blockId === activeFolderId : true;
+      const matchesSubFolder = activeSubFolderId ? guide.subBlockId === activeSubFolderId : true;
+      return matchesSearch && matchesFolder && matchesSubFolder;
+    });
+  }, [guides, searchQuery, activeFolderId, activeSubFolderId]);
 
   const handleSave = () => {
     if (!title.trim() || !content.trim()) return;
@@ -69,12 +68,10 @@ export function GuidesPanel() {
 
   const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
     const items = e.clipboardData.items;
-    let imagePasted = false;
-    for (let i = 0; i < items.length; i++) {
+        for (let i = 0; i < items.length; i++) {
       if (items[i].type.indexOf('image') !== -1) {
         e.preventDefault();
-        imagePasted = true;
-        const file = items[i].getAsFile();
+                const file = items[i].getAsFile();
         if (!file) continue;
         
         const reader = new FileReader();

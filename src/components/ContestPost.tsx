@@ -139,7 +139,7 @@ function CommentsSection({ contestId }: { contestId: string }) {
   useEffect(() => {
     const q = query(
       collection(db, 'contest_comments'), 
-      where('contestId', '==', contestId)
+      where('contestId', '==', contestId || 'UNASSIGNED')
     );
     const unsub = onSnapshot(q, (snap) => {
       // client-side sort since we might not have a composite index right away

@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../store';
-import { Plus, Edit2, Trash2, Heart, MessageSquare, Send, X, Image as ImageIcon, Search } from 'lucide-react';
+import { Plus, X, Image as ImageIcon, Search } from 'lucide-react';
 import { ContestPost } from "./ContestPost";
-import { db } from '../firebase';
-import { collection, query, where, onSnapshot, orderBy, addDoc, serverTimestamp, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 
 export function ContestsPanel() {
-  const { contests, currentUser, addContest, updateContest, deleteContest, toggleContestLike } = useStore();
+  const { contests, currentUser, addContest, updateContest} = useStore();
   const isAdmin = currentUser?.role === 'admin';
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
@@ -14,10 +12,12 @@ export function ContestsPanel() {
   const [content, setContent] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredContests = contests.filter(contest => {
+  const filteredContests = React.useMemo(() => {
     const query = searchQuery.toLowerCase();
-    return contest.title.toLowerCase().includes(query) || contest.content.toLowerCase().includes(query);
-  });
+    return contests.filter(contest => 
+      contest.title.toLowerCase().includes(query) || contest.content.toLowerCase().includes(query)
+    );
+  }, [contests, searchQuery]);
 
   const handleSave = () => {
     if (!title.trim() || !content.trim()) return;
@@ -39,12 +39,10 @@ export function ContestsPanel() {
 
   const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
     const items = e.clipboardData.items;
-    let imagePasted = false;
-    for (let i = 0; i < items.length; i++) {
+        for (let i = 0; i < items.length; i++) {
       if (items[i].type.indexOf('image') !== -1) {
         e.preventDefault();
-        imagePasted = true;
-        const file = items[i].getAsFile();
+                const file = items[i].getAsFile();
         if (!file) continue;
         
         const reader = new FileReader();

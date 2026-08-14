@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../store';
-import { ArrowLeft, Dices, Coins, Plus, Edit2, Trash2, X, Settings, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Dices, Coins, Plus, Trash2, X, Settings, ChevronDown } from 'lucide-react';
 
 const ROULETTES = [
   {

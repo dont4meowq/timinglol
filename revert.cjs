@@ -1,4 +1,17 @@
-import React from 'react';
+const fs = require('fs');
+
+fs.writeFileSync('src/main.tsx', `import {StrictMode} from 'react';
+import {createRoot} from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);`);
+
+fs.writeFileSync('src/App.tsx', `import React from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Login } from './components/Login';
 import { AdminPanel } from './components/AdminPanel';
@@ -8,7 +21,6 @@ import { RoulettePanel } from './components/RoulettePanel';
 import { GuidesPanel } from './components/GuidesPanel';
 import { ContestsPanel } from './components/ContestsPanel';
 import { CustomsPanel } from './components/CustomsPanel';
-import { PastesPanel } from './components/PastesPanel';
 import { useStore } from './store';
 import { useFirebaseSync } from './hooks/useFirebaseSync';
 import { Menu } from 'lucide-react';
@@ -36,7 +48,7 @@ export default function App() {
       )}
 
       {/* Sidebar Container */}
-      <div className={`flex flex-col fixed inset-y-0 left-0 z-50 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 transition-transform duration-200 ease-in-out`}>
+      <div className={\`flex flex-col fixed inset-y-0 left-0 z-50 transform \${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 transition-transform duration-200 ease-in-out\`}>
         <Sidebar />
       </div>
 
@@ -62,8 +74,6 @@ export default function App() {
           <ContestsPanel />
         ) : appView === 'customs' ? (
           <CustomsPanel />
-        ) : appView === 'pastes' ? (
-          <PastesPanel />
         ) : (
           <div className="flex-1 flex items-center justify-center text-neutral-500">Выберите раздел в меню</div>
         )}
@@ -71,3 +81,5 @@ export default function App() {
     </div>
   );
 }
+`);
+console.log("Reverted App.tsx and main.tsx");

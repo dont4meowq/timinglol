@@ -1,10 +1,18 @@
 const fs = require('fs');
-let content = fs.readFileSync('src/types.ts', 'utf8');
 
-const regex1 = /export interface Note \{[\s\S]*?pinned: boolean;\n\}/g;
-const regex2 = /export interface Section \{[\s\S]*?order\?: number;\n\}/g;
+let code = fs.readFileSync('src/types.ts', 'utf8');
 
-content = content.replace(regex1, '');
-content = content.replace(regex2, '');
-
-fs.writeFileSync('src/types.ts', content);
+if (!code.includes('export interface Paste')) {
+  code += `
+export interface Paste {
+  teamId?: string;
+  id: string;
+  title: string;
+  content: string;
+  authorId: string;
+  createdAt: number;
+}
+`;
+  fs.writeFileSync('src/types.ts', code);
+  console.log("Types updated.");
+}
