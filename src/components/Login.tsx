@@ -22,7 +22,7 @@ export function Login() {
         "@calmcommerce": "calmcommerce.1@nexus.app",
         "@kiesuuuuu": "kiesuuuuu.1@nexus.app",
         "@iknowhow2r0ll": "iknowhow2r0ll.1@nexus.app",
-        "@spiraldown9": "spiraldown9.1@nexus.app",
+        "@spiraldown9": "spiraldown9.2@nexus.app",
         "@dont4meowq": "dont4meowq.1@nexus.app",
         "@espanolespanolespan": "espanolespanolespan.1@nexus.app",
         "@sh1za911": "sh1za911.1@nexus.app",
