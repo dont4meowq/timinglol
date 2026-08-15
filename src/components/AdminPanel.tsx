@@ -63,7 +63,10 @@ export function AdminPanel() {
     e.preventDefault();
     if (!newModelName.trim()) return;
     try {
-      await addDoc(collection(db, 'models'), { name: newModelName.trim() });
+      await addDoc(collection(db, 'models'), { 
+        name: newModelName.trim(),
+        teamId: currentUser?.teamId || 'UNASSIGNED'
+      });
       setNewModelName('');
     } catch (err) {
       console.error(err);

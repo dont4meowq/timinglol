@@ -23,6 +23,7 @@ export function Login() {
         "@kiesuuuuu": "kiesuuuuu.1@nexus.app",
         "@iknowhow2r0ll": "iknowhow2r0ll.1@nexus.app",
         "@spiraldown9": "spiraldown9.2@nexus.app",
+        "@godproudofyou": "godproudofyou@nexus.app",
         "@dont4meowq": "dont4meowq.1@nexus.app",
         "@espanolespanolespan": "espanolespanolespan.1@nexus.app",
         "@sh1za911": "sh1za911.1@nexus.app",
@@ -37,7 +38,9 @@ export function Login() {
         "@katana8899": "katana8899.2@nexus.app",
         "@okayshen": "okayshen.3@nexus.app"
       };
-      const authEmail = overrides[login] || formatEmail(login);
+      const trimmed = login.trim();
+      const withAt = trimmed.startsWith('@') ? trimmed : '@' + trimmed;
+      const authEmail = overrides[withAt] || formatEmail(trimmed);
       await signInWithEmailAndPassword(auth, authEmail, password);
     } catch (err: any) {
       setError(err.message || 'Ошибка авторизации');
